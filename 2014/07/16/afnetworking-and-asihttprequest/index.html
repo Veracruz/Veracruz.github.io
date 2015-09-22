@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>AFNetworking &amp; ASIHTTPRequest 的初步使用方法 | Code in Technicolor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="总结一下 AFNetworking 和 ASIHTTPRequest 两个网络库的基本使用以及一些问题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AFNetworking & ASIHTTPRequest 的初步使用方法">
+<meta property="og:url" content="http://veracurz.github.io/2014/07/16/afnetworking-and-asihttprequest/index.html">
+<meta property="og:site_name" content="Code in Technicolor">
+<meta property="og:description" content="总结一下 AFNetworking 和 ASIHTTPRequest 两个网络库的基本使用以及一些问题">
+<meta property="og:updated_time" content="2014-12-21T07:54:37.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AFNetworking & ASIHTTPRequest 的初步使用方法">
+<meta name="twitter:description" content="总结一下 AFNetworking 和 ASIHTTPRequest 两个网络库的基本使用以及一些问题">
+  
+    <link rel="alternative" href="/atom.xml" title="Code in Technicolor" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Code in Technicolor</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Concentrate on iOS &amp; Web</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://veracurz.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-afnetworking-and-asihttprequest" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/07/16/afnetworking-and-asihttprequest/" class="article-date">
+  <time datetime="2014-07-16T05:54:07.000Z" itemprop="datePublished">2014-07-16</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      AFNetworking &amp; ASIHTTPRequest 的初步使用方法
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>总结一下 <em>AFNetworking</em> 和 <em>ASIHTTPRequest</em> 两个网络库的基本使用以及一些问题</p>
+<a id="more"></a>
+<p>首先到 <em>github</em> 下载这两个库，<em>ASIHTTPRequest</em> 从2011年就停止更新了，写这篇文章的时候 <em>AFNetworking</em> 的版本是 <code>2.3.1</code>。</p>
+<p>当前使用的环境是</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">Mac</span> <span class="tag">OS</span> <span class="tag">X</span> 10<span class="class">.9</span><span class="class">.4</span></span><br><span class="line"><span class="tag">Xcode</span> 5<span class="class">.1</span><span class="class">.1</span></span><br><span class="line"><span class="tag">iOS</span> 7<span class="class">.1</span></span><br></pre></td></tr></table></figure>
+<p>下面是两个库的地址</p>
+<p><code>https://github.com/pokeb/asi-http-request</code></p>
+<p><code>https://github.com/AFNetworking/AFNetworking</code></p>
+<p>这两个库都封装了网络的一些操作，可以方便的进行各种Request，包含一些高级的功能，另外还有一个库MKNetworking可以选择，下面有一个对比的表格，转载自 <a href="http://www.cnblogs.com/snake-hand/p/3177938.html" target="_blank" rel="external">AFNetworking、MKNetworkKit和ASIHTTPRequest对比</a></p>
+<table class="ynote_table" style="border-width: 1px; border-style: solid; border-color: #999999; border-collapse: collapse; margin: 6px auto; width: 100%;" border="1" cellspacing="0" cellpadding="2"><br><tbody><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>&nbsp;</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>AFNetworking</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>MKNetworkKit</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">ASIHTTPRequest</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">更新情况</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">维护和使用者相对多</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">维护和使用者相对少</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">停止更新</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>支持iOS和OSX</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>是</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>是</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>ARC</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>是</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>是</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>断点续传</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><span style="font-size: 12px; line-height: 18px;">否，可通过</span><span style="font-size: 12px; line-height: 18px;">AFDownloadRequestOperation</span></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">同步异步请求</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">只支持异步</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>图片缓存到本地</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>否，通过SDURLCache或AFCache</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>否</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>图片缓存到内存</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>是</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">后台下载</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">下载进度</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否，可通过AFDownloadRequestOperation</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">缓存离线请求</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否，<span style="font-size: 12px; line-height: 18px;">通过SDURLCache或AFCache</span></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">JSON、XML</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br></tr><br></tbody><br></table>
+
+<p><br><br><br></p>
+<h2 id="AFNetworking">AFNetworking</h2><p>这个框架现在的版本和以前的用法有一些区别，而且有一些设置比较隐蔽。其中扩展了一些系统的UI类，可以非常方便的使用UIProgressView、UIImageView等实现进度条，图片加载等功能。</p>
+<p><br><br></p>
+<h3 id="导入库">导入库</h3><hr>
+<p>只要将下载之后的目录下的 <code>AFNetworking</code> 和 <code>UIKit+AFNetworking</code> 两个文件夹导入到工程即可，并且不需要添加其他框架。</p>
+<p><br><br></p>
+<h3 id="GET请求并解析JSON">GET请求并解析JSON</h3><hr>
+<p>它有自己的管理类，这种请求非常简单明了，会直接解析JSON到一个 <code>NSDictionary</code>，当然前提是返回的响应是很规范的，可是很多时候并不是这样。这种请求方式要求响应头中的 <code>Content-type</code> 字段的值必须是 <code>text/json</code>，也就是<code>Content-type: text/json</code>。很多时候返回的响应头这个字段的值是 <code>text/html</code>, 这个时候这个库就会返回一个错误。当然错误格式的JSON数据也会返回错误。下面是调用的代码段.</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];</span><br><span class="line">    </span><br><span class="line"><span class="comment">//设置支持所有的MIME格式，略隐蔽的设置选项</span></span><br><span class="line">manager<span class="variable">.responseSerializer</span><span class="variable">.acceptableContentTypes</span> = <span class="literal">nil</span>;</span><br><span class="line">    </span><br><span class="line">[manager GET:JSON_URL parameters:<span class="literal">nil</span> success:^(AFHTTPRequestOperation *operation, <span class="keyword">id</span> responseObject) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@ : "</span>, [responseObject class], responseObject);</span><br><span class="line">    &#125; failure:^(AFHTTPRequestOperation *operation, <span class="built_in">NSError</span> *error) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"error : %@"</span>, error);</span><br><span class="line">    &#125;];</span><br></pre></td></tr></table></figure>
+<p><br><br></p>
+<h3 id="通用请求">通用请求</h3><hr>
+<p>这个库提供了响应的序列化器(serializer)，就是解析器，这个可以自己定制，如果不指定则不会解析，仅接收原始数据在block的参数 <code>responseObject</code> 中。<code>operation</code>有很多有用的属性，例如<code>operation.response.allHeaderFields</code> 可以查看完整的响应头。下面这段代码指定了XML的序列化器。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSURLRequest</span> *request = [<span class="built_in">NSURLRequest</span> requestWithURL:[<span class="built_in">NSURL</span> URLWithString:SOME_URL]];</span><br><span class="line">AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];</span><br><span class="line">    </span><br><span class="line"><span class="comment">//指定序列化器</span></span><br><span class="line">operation<span class="variable">.responseSerializer</span> = [AFXMLParserResponseSerializer serializer];</span><br><span class="line">    </span><br><span class="line">[operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, <span class="keyword">id</span> responseObject) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@ : "</span>, [responseObject class], responseObject);</span><br><span class="line">    &#125; failure:^(AFHTTPRequestOperation *operation, <span class="built_in">NSError</span> *error) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"error : %@"</span>, error);</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">[[<span class="built_in">NSOperationQueue</span> mainQueue] addOperation:operation];</span><br><span class="line">```从上面的代码的输出可以看到，它使用了iOS自带的XML解析器。</span><br><span class="line"><span class="preprocessor">###文件下载保存</span></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">下面的代码很方便的实现了一个文件的下载。</span><br><span class="line">```objectivec </span><br><span class="line">AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:[<span class="built_in">NSURLSessionConfiguration</span> defaultSessionConfiguration]];</span><br><span class="line"><span class="built_in">NSURLRequest</span> *request = [<span class="built_in">NSURLRequest</span> requestWithURL:[<span class="built_in">NSURL</span> URLWithString:FILE_URL]];</span><br><span class="line">    </span><br><span class="line"><span class="built_in">NSURLSessionDownloadTask</span> *task = [manager downloadTaskWithRequest:request progress:<span class="literal">nil</span> destination:^<span class="built_in">NSURL</span> *(<span class="built_in">NSURL</span> *targetPath, <span class="built_in">NSURLResponse</span> *response)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="built_in">NSURL</span> *documentURL = [[<span class="built_in">NSFileManager</span> defaultManager] URLForDirectory:<span class="built_in">NSDocumentDirectory</span> inDomain:<span class="built_in">NSUserDomainMask</span> appropriateForURL:<span class="literal">nil</span> create:<span class="literal">NO</span> error:<span class="literal">nil</span>];</span><br><span class="line">    <span class="keyword">return</span> [documentURL URLByAppendingPathComponent:FILE_NAME];</span><br><span class="line">    &#125; completionHandler:^(<span class="built_in">NSURLResponse</span> *response, <span class="built_in">NSURL</span> *filePath, <span class="built_in">NSError</span> *error)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"error : %@"</span>, error);</span><br><span class="line">    &#125;];</span><br><span class="line"></span><br><span class="line"><span class="comment">//不要忘记开始任务</span></span><br><span class="line">[task resume];</span><br></pre></td></tr></table></figure>
+<p><br><br><br></p>
+<h2 id="ASIHTTPRequest">ASIHTTPRequest</h2><p>这个停止更新很久的库使用的是MRC，并且在新的系统中使用可能会遇到一些问题，但确实一个很好地库，支持断点续传、缓存、身份验证等等。</p>
+<p><br><br></p>
+<h3 id="导入库-1">导入库</h3><hr>
+<p>下载库之后，将目录下的 <code>Classes</code> 和 <code>External</code> 文件夹导入到项目中，这并不是完整的导入，它的单元测试模块的一些文件并不包含在这个目录中，需要用 <em>ruby</em> 相关的命令来导入。这里只需要删除 <code>Classes</code> 目录下的 <code>Test</code> 删除即可。</p>
+<p><br><br></p>
+<h3 id="项目设置">项目设置</h3><hr>
+<p>需要添加以下框架和库</p>
+<p><code>CFNetworking.framework</code><br><code>SystemConfiguration.framework</code><br><code>MobileCoreServices.framework</code><br><code>libz.dylib</code><br><code>libxml2.dylib</code></p>
+<p>还要在项目的 <code>Build Settings</code> 中的 <code>Header Search Paths</code> 字段中添加 <code>/usr/include/libxml2/</code>。</p>
+<p>如果项目是ARC，请在这个库的所有文件添加标签 <code>-fnobjectivec-arc</code>，在 <code>Build Phases</code> 中的 <code>Compile Sources</code>。或者也可以把项目改成mrc而你自己创建的文件添加标签 <code>-fobjectivec-arc</code>。</p>
+<p>另外在64位的iOS系统下会有很多类型警告，按照推荐的修改即可。</p>
+<p><br><br></p>
+<h3 id="数据请求">数据请求</h3><hr>
+<p>有同步和异步请求，同步的意义不大，这里给出异步请求。请求的处理有两种方式，一种是代理，一种是 <code>block</code>。下面给出 <code>block</code> 方式的，代理方式在 <code>ASIHTTPRequestDelegate</code> 的文件中的定义很容易理解。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSURL</span> *url = [<span class="built_in">NSURL</span> URLWithString:SOME_URL];</span><br><span class="line">    </span><br><span class="line"><span class="comment">//使用__weak来防止使用block出现的retain循环</span></span><br><span class="line">__<span class="keyword">weak</span> ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];</span><br><span class="line">    </span><br><span class="line"><span class="comment">//使用代理方式则添加下面这句</span></span><br><span class="line"><span class="comment">//request.delegate = self;</span></span><br><span class="line">    </span><br><span class="line">[request setCompletionBlock:^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>, request<span class="variable">.responseString</span>);</span><br><span class="line">    &#125;];</span><br><span class="line">[request setFailedBlock:^&#123;</span><br><span class="line">	<span class="built_in">NSLog</span>(<span class="string">@"%@"</span>, request<span class="variable">.error</span>);</span><br><span class="line">    &#125;];</span><br><span class="line">[request startAsynchronous];</span><br></pre></td></tr></table></figure>
+<p><br><br></p>
+<h3 id="文件下载缓存">文件下载缓存</h3><hr>
+<p>支持多种缓存策略，这里使用永久缓存的策略。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSURL</span> *url = [<span class="built_in">NSURL</span> URLWithString:FILE_URL];</span><br><span class="line">__<span class="keyword">weak</span> ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];</span><br><span class="line">    </span><br><span class="line">request<span class="variable">.downloadCache</span> = [ASIDownloadCache sharedCache];</span><br><span class="line">    </span><br><span class="line"><span class="comment">//指定缓存策略</span></span><br><span class="line">request<span class="variable">.cachePolicy</span> = ASIOnlyLoadIfNotCachedCachePolicy;</span><br><span class="line">    </span><br><span class="line">[request setCompletionBlock:^&#123;</span><br><span class="line">    [request<span class="variable">.responseData</span> writeToFile:LO<span class="built_in">CAL_FILE_URL</span> atomically:<span class="literal">YES</span>];</span><br><span class="line">    &#125;];</span><br><span class="line">[request setFailedBlock:^&#123;</span><br><span class="line">  	<span class="built_in">NSLog</span>(<span class="string">@"%@"</span>, request<span class="variable">.error</span>);</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">[request startAsynchronous];</span><br></pre></td></tr></table></figure>
+<p>下载任务是支持进度显示的，需要用一个UIProgressView代理，和设置显示精确进度，下面两句</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">request<span class="variable">.showAccurateProgress</span> = <span class="literal">YES</span>;</span><br><span class="line">request<span class="variable">.downloadProgressDelegate</span> = progressView;</span><br></pre></td></tr></table></figure>
+<h2 id="—-">—-</h2><p><br><br></p>
+<p>以上就是两个库的基本用法，还有一些上传数据，身份验证等等点击下面的参考资料中的链接查看。</p>
+<p><br><br><br><br></p>
+<h4 id="参考资料">参考资料</h4><hr>
+<ol>
+<li><a href="http://mobile.51cto.com/iphone-405168.htm" target="_blank" rel="external">专题：iOS教程之ASIHttpRequest完全攻略</a></li>
+<li><a href="http://allseeing-i.com/ASIHTTPRequest/How-to-use" target="_blank" rel="external">ASIHTTPRequest 官方文档</a></li>
+<li><a href="http://cocoadocs.org/docsets/AFNetworking/2.3.1/index.html" target="_blank" rel="external">AFNetworking 官方文档</a></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://veracurz.github.io/2014/07/16/afnetworking-and-asihttprequest/" data-id="cieuj86x2000n4gl2co78bosd" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2014/07/17/core-animation/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Core Animation 中的3D变换以及简单应用
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2014/07/14/how-to-create-your-own-blog-on-github-pages/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">使用Github + Octopress建立博客</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Ancient-Blog/">Ancient Blog</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Blog-Relations/">Blog Relations</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web/">Web</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a><span class="category-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/07/">July 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">May 2012</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/09/22/iOS-Adventure-1/">iOS Adventure: 初章</a>
+          </li>
+        
+          <li>
+            <a href="/2015/01/15/rails-deployment-on-nginx-with-passenger-mac/">在 Mac 上使用 Nginx + Passenger 部署 Rails</a>
+          </li>
+        
+          <li>
+            <a href="/2014/12/22/octopress-highlight-line-in-code-block/">为 Octopress 中的代码块添加高亮行的功能</a>
+          </li>
+        
+          <li>
+            <a href="/2014/12/19/ubuntu-14-dot-10-postfix-with-dovecot/">Ubuntu 14.10 邮件服务器搭建：Postfix 和 dovecot </a>
+          </li>
+        
+          <li>
+            <a href="/2014/12/11/sqlite-problem-of-rails/">解决 gem 安装 sqlite3 失败的问题</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 Vez<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script> -->
+<script src="/js/jquery-2.1.4.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>

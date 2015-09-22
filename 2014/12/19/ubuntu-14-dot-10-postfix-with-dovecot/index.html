@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Ubuntu 14.10 邮件服务器搭建：Postfix 和 dovecot  | Code in Technicolor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="这几天需要在服务器上搭个邮件服务器，没想到还挺麻烦的。
+麻烦主要来自两方面，可以选择的邮件服务器软件略多(例如 qmail xmail sendmail 等等，还有转发服务，验证服务相关的，cyrus，sasl等等)，各种配置略苦。
+各种 Search 之后选择了 Postfix 和 dovecot，Postfix 是本体，dovecot 作为转发服务(IMAP, POP3, SMTP)。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu 14.10 邮件服务器搭建：Postfix 和 dovecot ">
+<meta property="og:url" content="http://veracurz.github.io/2014/12/19/ubuntu-14-dot-10-postfix-with-dovecot/index.html">
+<meta property="og:site_name" content="Code in Technicolor">
+<meta property="og:description" content="这几天需要在服务器上搭个邮件服务器，没想到还挺麻烦的。
+麻烦主要来自两方面，可以选择的邮件服务器软件略多(例如 qmail xmail sendmail 等等，还有转发服务，验证服务相关的，cyrus，sasl等等)，各种配置略苦。
+各种 Search 之后选择了 Postfix 和 dovecot，Postfix 是本体，dovecot 作为转发服务(IMAP, POP3, SMTP)。">
+<meta property="og:updated_time" content="2015-07-20T17:21:35.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ubuntu 14.10 邮件服务器搭建：Postfix 和 dovecot ">
+<meta name="twitter:description" content="这几天需要在服务器上搭个邮件服务器，没想到还挺麻烦的。
+麻烦主要来自两方面，可以选择的邮件服务器软件略多(例如 qmail xmail sendmail 等等，还有转发服务，验证服务相关的，cyrus，sasl等等)，各种配置略苦。
+各种 Search 之后选择了 Postfix 和 dovecot，Postfix 是本体，dovecot 作为转发服务(IMAP, POP3, SMTP)。">
+  
+    <link rel="alternative" href="/atom.xml" title="Code in Technicolor" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Code in Technicolor</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Concentrate on iOS &amp; Web</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://veracurz.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-ubuntu-14-dot-10-postfix-with-dovecot" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/12/19/ubuntu-14-dot-10-postfix-with-dovecot/" class="article-date">
+  <time datetime="2014-12-19T07:44:48.000Z" itemprop="datePublished">2014-12-19</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Ubuntu 14.10 邮件服务器搭建：Postfix 和 dovecot 
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这几天需要在服务器上搭个邮件服务器，没想到还挺麻烦的。</p>
+<p>麻烦主要来自两方面，可以选择的邮件服务器软件略多(例如 qmail xmail sendmail 等等，还有转发服务，验证服务相关的，cyrus，sasl等等)，各种配置略苦。</p>
+<p>各种 Search 之后选择了 <em>Postfix</em> 和 <em>dovecot</em>，<em>Postfix</em> 是本体，<em>dovecot</em> 作为转发服务(IMAP, POP3, SMTP)。</p>
+<a id="more"></a>
+<div class="post_warn"><b>Important: </b>以下方法不使用 ssl ，对安全性有要求的话，请勿采用！</div>
+
+<p><br></p>
+<h3 id="软件包安装">软件包安装</h3><hr>
+<p>直接上命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># use root</span></span><br><span class="line">sudo -i</span><br><span class="line"></span><br><span class="line">apt-get install postfix</span><br><span class="line"></span><br><span class="line"><span class="comment"># if you get a fatal, usually use "apt-get -f install"</span></span><br><span class="line">apt-get install dovecot-core dovecot-pop3d dovecot-smtpd</span><br><span class="line"></span><br><span class="line">apt-get install mail-stack-delivery</span><br><span class="line"></span><br><span class="line">apt-get install mailutils</span><br></pre></td></tr></table></figure>
+<p>以上命令安装完所需的软件包，接下来就是蛋疼的配置时间啦。老实说，要想熟悉全部设置选项非常费劲也费时间，还要正确的设置，相当苦啊 Σ( ￣□￣||)</p>
+<p>so~，we need search engine. Then I got a nice guide article:</p>
+<p><a href="http://www.nowtaxes.com.tw/node/1147" target="_blank" rel="external">使用 Ubuntu 安裝郵件伺服器 (Mail Server)：Postfix + Dovecot + Openwebmail</a></p>
+<p>2010年的文章，所以有些内容已经不适用了，不过只有个别地方。</p>
+<p>文章中最后的 Openwebmail 的依赖库有点略旧了，装到最后出现版本问题，要求不高就简单的用客户端就好了。</p>
+<p>下面整理一下文章内容。</p>
+<p><br><br></p>
+<h3 id="配置">配置</h3><hr>
+<p>修改 <code>/etc/postfix/main.cf</code></p>
+<table style="border:0;"><br>    <tr><br>        <td><li>第  9行</li></td><br>        <td>删除 (Ubuntu)</td><br>    </tr><br>    <tr><br>        <td><li>第21行到第25行&nbsp;&nbsp;</li></td><br>        <td>注释掉</td><br>    </tr><br>    <tr><br>        <td><li>第34行</li></td><br>        <td>添加自己的域名，例如 mail.example.com</td><br>    </tr><br>    <tr><br>        <td><li>第41行</li></td><br>        <td>注释掉，使用 mbox 格式</td><br>    </tr><br>    <tr><br>        <td><li>第54行</li></td><br>        <td>注释掉</td><br>    </tr><br>    <tr><br>        <td><li>第56行到第61行</li></td><br>        <td>注释掉</td><br>    </tr><br></table><br><br><br><br><br>变更的地方已高亮<br><br>配置文件中的最后几行，要在安装完 <code>mail-stack-delivery</code> 包之后才会出现<br><br><br><figure class="highlight"><figcaption><span>mark: 9, 21-25, 34, 41, 54, 56-61</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># See /usr/share/postfix/main.cf.dist for a commented, more complete version&#10; &#10; &#10;# Debian specific:  Specifying a file name will cause the first&#10;# line of that file to be used as the name.  The Debian default&#10;# is /etc/mailname.&#10;#myorigin = /etc/mailname&#10; &#10;smtpd_banner = $myhostname ESMTP $mail_name&#10;biff = no&#10; &#10;# appending .domain is the MUA&#39;s job.&#10;append_dot_mydomain = no&#10; &#10;# Uncomment the next line to generate &#34;delayed mail&#34; warnings&#10;#delay_warning_time = 4h&#10; &#10;readme_directory = no&#10; &#10;# TLS parameters&#10;#smtpd_tls_cert_file = /etc/ssl/certs/ssl-mail.pem&#10;#smtpd_tls_key_file = /etc/ssl/private/ssl-mail.key&#10;#smtpd_use_tls = yes&#10;#smtpd_tls_session_cache_database = btree:$&#123;data_directory&#125;/smtpd_scache&#10;#smtp_tls_session_cache_database = btree:$&#123;data_directory&#125;/smtp_scache&#10; &#10;# See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for&#10;# information on enabling SSL in the smtp client.&#10; &#10;myhostname = dns.example.com.tw&#10;alias_maps = hash:/etc/aliases&#10;alias_database = hash:/etc/aliases&#10;myorigin = /etc/mailname&#10;mydestination = localhost, localhost.localdomain, mail.example.com&#10;relayhost = &#10;mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128&#10;mailbox_size_limit = 0&#10;recipient_delimiter = +&#10;inet_interfaces = all&#10; &#10;#home_mailbox = Maildir/&#10; &#10;smtpd_sasl_auth_enable = yes&#10;smtpd_sasl_type = dovecot&#10;smtpd_sasl_path = private/dovecot-auth&#10;smtpd_sasl_authenticated_header = yes&#10;smtpd_sasl_security_options = noanonymous&#10;smtpd_sasl_local_domain = $myhostname&#10;broken_sasl_auth_clients = yes&#10; &#10;smtpd_recipient_restrictions = reject_unknown_sender_domain, reject_unknown_recipient_domain, reject_unauth_pipelining, permit_mynetworks, permit_sasl_authenticated, reject_unauth_destination&#10;smtpd_sender_restrictions = reject_unknown_sender_domain&#10; &#10;#mailbox_command = /usr/lib/dovecot/deliver -c /etc/dovecot/conf.d/01-dovecot-postfix.conf -n -m &#34;$&#123;EXTENSION&#125;&#34;&#10; &#10;#smtp_use_tls = yes&#10;#smtpd_tls_received_header = yes&#10;#smtpd_tls_mandatory_protocols = SSLv3, TLSv1&#10;#smtpd_tls_mandatory_ciphers = medium&#10;#smtpd_tls_auth_only = yes&#10;#tls_random_source = dev:/dev/urandom</span><br></pre></td></tr></table></figure><br><br>接下来修改 <code>/etc/dovecot/conf.d/99-mail-stack-delivery.conf</code><br><br><table><br>    <tr><br>        <td>第 3 行</td><br>        <td>disable_plaintext_auth = no，使用 Ubuntu 用户账户的用户名和密码</td><br>    </tr><br>    <tr><br>        <td>第 4 行</td><br>        <td>ssl = no，不使用 SSL 认证</td><br>    </tr><br>    <tr><br>        <td>第 5 行到第 7 行</td><br>        <td>注释掉</td><br>    </tr><br>    <tr><br>        <td>第 8 行</td><br>        <td>注释掉，使用 mbox 格式</td><br>    </tr><br>    <tr><br>        <td>第 9 行</td><br>        <td>加一行 mail_location = mbox:~/mail:INBOX=/var/spool/mail/%u</td><br>    </tr><br></table>
+
+
+<figure class="highlight"><figcaption><span>mark:3-9</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># Some general options&#10;protocols = imap pop3 sieve&#10;disable_plaintext_auth = no&#10;ssl = no&#10;# ssl_cert = &#60;/etc/dovecot/dovecot.pem&#10;# ssl_key = &#60;/etc/dovecot/private/dovecot.pem&#10;# ssl_cipher_list = ALL:!LOW:!SSLv2:ALL:!aNULL:!ADH:!eNULL:!EXP:RC4+RSA:+HIGH:+MEDIUM&#10;# mail_location = maildir:~/Maildir&#10;mail_location = mbox:~/mail:INBOX=/var/mail/%u # (for mbox)&#10;auth_username_chars = abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.-_@&#10;&#10;# IMAP configuration&#10;protocol imap &#123;&#10;        mail_max_userip_connections = 10&#10;        imap_client_workarounds = delay-newmail&#10;&#125;&#10;&#10;# POP3 configuration&#10;protocol pop3 &#123;&#10;        mail_max_userip_connections = 10&#10;        pop3_client_workarounds = outlook-no-nuls oe-ns-eohe&#10;&#125;&#10;&#10;# LDA configuration&#10;protocol lda &#123;&#10;        postmaster_address = postmaster&#10;        mail_plugins = sieve&#10;        quota_full_tempfail = yes&#10;        deliver_log_format = msgid=%m: %$&#10;        rejection_reason = Your message to &#60;%t&#62; was automatically rejected:%n%r&#10;&#125;&#10;&#10;# Plugins configuration&#10;plugin &#123;&#10;        sieve=~/.dovecot.sieve&#10;        sieve_dir=~/sieve&#10;&#125;&#10;&#10;# Authentication configuration&#10;auth_mechanisms = plain login&#10;&#10;service auth &#123;&#10;  # Postfix smtp-auth&#10;  unix_listener /var/spool/postfix/private/dovecot-auth &#123;&#10;    mode = 0660&#10;    user = postfix&#10;    group = postfix&#10;  &#125;&#10;&#125;</span><br></pre></td></tr></table></figure>
+<p>使用命令测试一下 <code>telnet localhost 25</code></p>
+<p>Postfix 会有如下回应</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Trying <span class="number">127.0</span>.<span class="number">0.1</span>...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is <span class="string">'^]'</span>.</span><br><span class="line"><span class="number">220</span> yourhostname ESMTP Postfix</span><br></pre></td></tr></table></figure>
+<p>然后使用命令 <code>ehlo localhost</code></p>
+<p>回应如下的话就设定 ok 啦</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">250</span>-yourhostname</span><br><span class="line"><span class="number">250</span>-PIPELINING</span><br><span class="line"><span class="number">250</span>-SIZE <span class="number">10240000</span></span><br><span class="line"><span class="number">250</span>-VRFY</span><br><span class="line"><span class="number">250</span>-ETRN</span><br><span class="line"><span class="number">250</span>-AUTH PLAIN LOGIN</span><br><span class="line"><span class="number">250</span>-AUTH=PLAIN LOGIN</span><br><span class="line"><span class="number">250</span>-ENHANCEDSTATUSCODES</span><br><span class="line"><span class="number">250</span>-<span class="number">8</span>BITMIME</span><br><span class="line"><span class="number">250</span> DSN</span><br></pre></td></tr></table></figure>
+<p>不要忘记创建用户</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># create a account and home dir "/home/admin"</span></span><br><span class="line">useradd -m admin</span><br><span class="line">passwd admin</span><br></pre></td></tr></table></figure>
+<p>这样你的邮件地址就是 <code>admin@example.com</code></p>
+<p>接下来就可以使用邮件客户端来连接啦</p>
+<p>可以使用命令 <code>netstat -apn | grep 110</code> 会看到一行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tcp    <span class="number">0</span>    <span class="number">0</span> <span class="number">0.0</span>.<span class="number">0.0</span>:<span class="number">110</span>    <span class="number">0.0</span>.<span class="number">0.0</span>:*     LISTEN     <span class="number">26719</span>/dovecot</span><br></pre></td></tr></table></figure>
+<p>POP3 服务可以正常使用了，<strong><font color="red">但是</font></strong>，只能接收邮件不能发送，SMTP 连不上，也许是因为我使用的客户端，或者我打开的方式不对…</p>
+<p><br><br></p>
+<p>以上，就完成了一个基本的邮件服务器的搭建。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://veracurz.github.io/2014/12/19/ubuntu-14-dot-10-postfix-with-dovecot/" data-id="cieuj86wo00094gl2mmg8d3hr" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2014/12/22/octopress-highlight-line-in-code-block/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          为 Octopress 中的代码块添加高亮行的功能
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2014/12/11/sqlite-problem-of-rails/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">解决 gem 安装 sqlite3 失败的问题</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Ancient-Blog/">Ancient Blog</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Blog-Relations/">Blog Relations</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web/">Web</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a><span class="category-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/09/">September 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/08/">August 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/05/">May 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/01/">January 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/07/">July 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/05/">May 2012</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/09/22/iOS-Adventure-1/">iOS Adventure: 初章</a>
+          </li>
+        
+          <li>
+            <a href="/2015/01/15/rails-deployment-on-nginx-with-passenger-mac/">在 Mac 上使用 Nginx + Passenger 部署 Rails</a>
+          </li>
+        
+          <li>
+            <a href="/2014/12/22/octopress-highlight-line-in-code-block/">为 Octopress 中的代码块添加高亮行的功能</a>
+          </li>
+        
+          <li>
+            <a href="/2014/12/19/ubuntu-14-dot-10-postfix-with-dovecot/">Ubuntu 14.10 邮件服务器搭建：Postfix 和 dovecot </a>
+          </li>
+        
+          <li>
+            <a href="/2014/12/11/sqlite-problem-of-rails/">解决 gem 安装 sqlite3 失败的问题</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 Vez<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script> -->
+<script src="/js/jquery-2.1.4.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>
