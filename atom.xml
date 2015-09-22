@@ -5,7 +5,7 @@
   <subtitle><![CDATA[Concentrate on iOS & Web]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://veracruz.github.io//"/>
-  <updated>2015-09-22T00:41:34.000Z</updated>
+  <updated>2015-09-22T00:42:41.000Z</updated>
   <id>http://veracruz.github.io//</id>
   
   <author>
@@ -17,10 +17,10 @@
   
   <entry>
     <title><![CDATA[iOS Adventure: 初章]]></title>
-    <link href="http://veracruz.github.io/2015/09/22/iOS-Adventure-1/"/>
-    <id>http://veracruz.github.io/2015/09/22/iOS-Adventure-1/</id>
-    <published>2015-09-21T22:53:13.000Z</published>
-    <updated>2015-09-22T00:41:34.000Z</updated>
+    <link href="http://veracruz.github.io/2015/07/09/iOS-Adventure-1/"/>
+    <id>http://veracruz.github.io/2015/07/09/iOS-Adventure-1/</id>
+    <published>2015-07-08T22:53:13.000Z</published>
+    <updated>2015-09-22T00:42:41.000Z</updated>
     <content type="html"><![CDATA[<p>很多零散的问题总结起来并不容易，尤其是在之后的日子想要把 <em>当时是如何解决的？</em> 这件事想起来。所以开始尝试记录这些零散的问题。</p>
 <a id="more"></a>
 <h2 id="跳动的元素">跳动的元素</h2><h3 id="Combat">Combat</h3><blockquote>
