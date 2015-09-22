@@ -59,7 +59,7 @@
 <meta property="og:image" content="http://veracruz.github.io/images/2015_7/2015-07-22-other2.png">
 <meta property="og:image" content="http://veracruz.github.io/images/2015_7/2015-07-09-Override-Error.png">
 <meta property="og:image" content="http://veracruz.github.io/images/2015_7/2015-07-09-Override-solved.png">
-<meta property="og:updated_time" content="2015-09-22T00:10:32.000Z">
+<meta property="og:updated_time" content="2015-09-22T00:33:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS Adventure: 初章">
 <meta name="twitter:description" content="很多零散的问题总结起来并不容易，尤其是在之后的日子想要把 当时是如何解决的？ 这件事想起来。所以开始尝试记录这些零散的问题。">
@@ -239,7 +239,8 @@
       
 
       
-        <span itemprop="articleBody"><p>很多零散的问题总结起来并不容易，尤其是在之后的日子想要把 <em>当时是如何解决的？</em> 这件事想起来。所以开始尝试记录这些零散的问题。</p>
+        <span itemprop="articleBody"><blockquote class="blockquote-center">很多零散的问题总结起来并不容易，尤其是在之后的日子想要把 <em>当时是如何解决的？</em> 这件事想起来。所以开始尝试记录这些零散的问题。</blockquote>
+
 <a id="more"></a>
 <h2 id="跳动的元素">跳动的元素</h2><h3 id="Combat">Combat</h3><blockquote>
 <p>当从有 TabBar 的 <code>Controller A</code> 向一个需要隐藏 TabBar 的 <code>Controller B</code> push 时，<code>Controller B</code> 中设置好 Autolayout 与底部相距的 Constraint 的元素们，会在刚刚出现时在下方留下一个 TabBar 高度的空白，稍后就会跳动到正常位置。</p>
@@ -252,7 +253,7 @@
 <p>这个时候只要很简单的改成这个样子就可以了</p>
 <div align="center"><img src="/images/2015_7/2015-07-09-Constraint_Correct.png"></div><br><div align="center"><font color="gray">与 Bottom Layout Guide.Bottom 连接的 Constraint</font></div>
 
-
+<p><br><br><br></p>
 <h2 id="推送的陷阱">推送的陷阱</h2><h3 id="Combat-1">Combat</h3><blockquote>
 <p>开发环境的推送操作起来基本很简单，生产环境下则会遇到一些小问题，例如这样</p>
 <div align="center"><img src="/images/2015_7/2015-07-22-Push_problem.jpg"></div>
@@ -281,7 +282,7 @@
 <p>当然不要忘记下面这些</p>
 <div align="center"><img src="/images/2015_7/2015-07-22-other1.png"></div><br><div align="center"><img src="/images/2015_7/2015-07-22-other2.png"></div>
 
-
+<p><br><br><br></p>
 <h2 id="覆盖不掉的属性">覆盖不掉的属性</h2><h3 id="Combat-2">Combat</h3><blockquote>
 <p>当你想直接覆盖一个系统类的属性时，会得到一个错误</p>
 <div align="center"><img src="/images/2015_7/2015-07-09-Override-Error.png"></div><br><div align="center"><font color="gray">直接重载是不行的</font></div>
