@@ -5,7 +5,7 @@
   <subtitle><![CDATA[Concentrate on iOS & Web]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://veracruz.github.io//"/>
-  <updated>2015-09-22T00:42:41.000Z</updated>
+  <updated>2015-09-23T21:46:16.000Z</updated>
   <id>http://veracruz.github.io//</id>
   
   <author>
@@ -16,11 +16,47 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title><![CDATA[One Word API - (1)]]></title>
+    <link href="http://veracruz.github.io/2015/09/24/one-word-api-1/"/>
+    <id>http://veracruz.github.io/2015/09/24/one-word-api-1/</id>
+    <published>2015-09-23T21:43:08.000Z</published>
+    <updated>2015-09-23T21:46:16.000Z</updated>
+    <content type="html"><![CDATA[<p>有一些不是很常用的 API 看到之后可能根本看不出来是干什么的，或者看过文档之后很快就忘记了，又或者其实根本不知道文档在说什么(¦3[▓▓] 。</p>
+<p>本文仅以大概一句话来说明API是做什么用的，在考虑如何实现一个功能时可以想起来需要用到的 API</p>
+<p>本篇 API 收集自 <a href="http://nshipster.com" target="_blank" rel="external">NSHipster</a></p>
+<a id="more"></a>
+<p><br><br></p>
+<h2 id="UIKeyCommand"><code>UIKeyCommand</code></h2><p>提供 iPad 上的键盘快捷键的实现，并且可以显示快捷键列表在屏幕上。</p>
+<h2 id="NSIndexSet"><code>NSIndexSet</code></h2><p>可以理解为存储 index 的 set，它是有序的无符号整数集合，例如数组的 index，它的功能不仅仅限于此，请打开脑洞。</p>
+<h2 id="NSCache"><code>NSCache</code></h2><p>基本上相当于一个 <code>NSMutableDictionary</code> ，但是它会在需要的时候自动删除对象来释放内存，同它的名字一样 缓存。</p>
+<h2 id="NSSort​Descriptor"><code>NSSort​Descriptor</code></h2><p>基本上它可以让你一行完成常用的排序的需求。<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> numbers: <span class="type">NSArray</span> = [<span class="number">2</span>, <span class="number">1</span>, <span class="number">4</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">9</span>, <span class="number">0</span>, <span class="number">7</span> ,<span class="number">8</span>]</span><br><span class="line">numbers.sortedArrayUsingDescriptors([<span class="type">NSSortDescriptor</span>(key: <span class="string">""</span>, ascending: <span class="literal">true</span>)])</span><br></pre></td></tr></table></figure></p>
+<p><code>key</code> 参数可以指定数组内对象的 <em>keyPath</em> 的值来选择你需要根据哪个属性排序。</p>
+<h2 id="CFString​Transform"><code>CFString​Transform</code></h2><p>这个函数对于中文来说最大的用处应该是这个了吧<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> string = <span class="type">NSMutableString</span>(string: <span class="string">"中文"</span>)</span><br><span class="line"><span class="type">CFStringTransform</span>(string, <span class="literal">nil</span>, kCFStringTransformMandarinLatin, <span class="literal">false</span>) <span class="comment">// zhōng wén</span></span><br><span class="line"><span class="type">CFStringTransform</span>(string, <span class="literal">nil</span>, kCFStringTransformStripCombiningMarks, <span class="literal">false</span>) <span class="comment">// zhong wen</span></span><br></pre></td></tr></table></figure></p>
+<p>然后你的脑洞就可以做很多事了ԅ(≖‿≖ԅ)</p>
+<h2 id="NSOperation_抽象类"><code>NSOperation</code> <font color="gray" size="2">抽象类</font></h2><p>与 GCD 相比，它可以相对简单的用面向对象的方式来处理稍微复杂的多线程任务，<strong>它可以取消</strong>。<code>NSBlockOperation</code> 是一个好用的实体类。结合 <code>NSOperationQueue</code> 来控制任务的进行。</p>
+<h2 id="CFBag"><code>CFBag</code></h2><p>这确实是一个晦涩的数据类型，集合中的元素可以出现多次，并且会被计数。它的可变版 <code>CFMutableBag</code> 还提供了一堆回调 <code>struct CFBagCallBacks</code>。这里用它对应的 Foundation API <code>NSCountedSet</code> 简单说明。<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">set</span> = <span class="type">NSCountedSet</span>(array: [<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>])</span><br><span class="line"><span class="keyword">set</span>.countForObject(<span class="number">1</span>) <span class="comment">// 5</span></span><br><span class="line"><span class="keyword">set</span>.countForObject(<span class="number">2</span>) <span class="comment">// 3</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="UIAccessibility_非正式协议"><code>UIAccessibility</code> <font color="gray" size="2">非正式协议</font></h2><p><em>UIKit</em> 中所有的标准视图和控件都实现了这个协议，利用协议提供的方法可以方便的添加辅助功能，可以让 <em>VoiceOver</em> 读出你的控件。</p>
+<h2 id="NSCharacter​Set"><code>NSCharacter​Set</code></h2><p>它和它的可变版本 <code>NSMutableCharacterSet</code>，用面向对象的方式来表示一组 Unicode 字符。它经常与 <code>NSString</code> 及 <code>NSScanner</code> 组合起来使用，在不同的字符上做过滤、删除或者分割操作。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>有一些不是很常用的 API 看到之后可能根本看不出来是干什么的，或者看过文档之后很快就忘记了，又或者其实根本不知道文档在说什么(¦3[▓▓] 。</p>
+<p>本文仅以大概一句话来说明API是做什么用的，在考虑如何实现一个功能时可以想起来需要用到的 API</p>
+<p>本篇 API 收集自 <a href="http://nshipster.com">NSHipster</a></p>]]>
+    
+    </summary>
+    
+      <category term="one word api" scheme="http://veracruz.github.io/tags/one-word-api/"/>
+    
+      <category term="iOS" scheme="http://veracruz.github.io/categories/iOS/"/>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[iOS Adventure: 初章]]></title>
     <link href="http://veracruz.github.io/2015/07/09/iOS-Adventure-1/"/>
     <id>http://veracruz.github.io/2015/07/09/iOS-Adventure-1/</id>
     <published>2015-07-08T22:53:13.000Z</published>
-    <updated>2015-09-22T00:42:41.000Z</updated>
+    <updated>2015-09-22T00:57:51.000Z</updated>
     <content type="html"><![CDATA[<p>很多零散的问题总结起来并不容易，尤其是在之后的日子想要把 <em>当时是如何解决的？</em> 这件事想起来。所以开始尝试记录这些零散的问题。</p>
 <a id="more"></a>
 <h2 id="跳动的元素">跳动的元素</h2><h3 id="Combat">Combat</h3><blockquote>
