@@ -53,7 +53,7 @@
 
 刚刚发现 ReactiveCocoa 的时候，看到相关的术语 signal、subscriber 之类的，不明觉厉。再加上 FRP - Functional Reactive Programming，我似乎看到了新世界的大门。
 作为初见，希望尽可能地提取关键概念来理解这个非常热门但是有些难懂的框架，减少打开新世界大门的阻力。">
-<meta property="og:updated_time" content="2015-09-29T21:05:08.000Z">
+<meta property="og:updated_time" content="2015-09-29T21:09:10.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ReactiveCocoa 初见">
 <meta name="twitter:description" content="闲话: 听说学 Haskell 可以打开新世界的大门
@@ -256,7 +256,7 @@
 <p>希望详细了解，<a href="http://www.infoq.com/cn/articles/functional-reactive-programming/" target="_blank" rel="external">这里</a> 有一篇很好的关于 <em>FRP</em> 的文章</p>
 <p><br></p>
 <h2 id="MVC_vs_MVVM">MVC vs MVVM</h2><p>iOS 开发过程中会遇到在一个 View Controller 的文件里，有着几百上千行的代码。View Controller 总是承担着过多的任务，这里 MVVM 的出现就是为了剥离 View Controller 中过多的代码，objc.io 的第一个 issue 就是一篇分离 View Controller 和 Table View 的很好的文章，<a href="https://www.objc.io/issues/1-view-controllers/" target="_blank" rel="external">英文版</a>，<a href="http://www.objccn.io/issue-1/" target="_blank" rel="external">中文版</a>。</p>
-<p>另外 <a href="http://www.sprynthesis.com/2014/12/06/reactivecocoa-mvvm-introduction/" target="_blank" rel="external">这里</a> 有一篇很好的用 ReactiveCocoa 实现 MVVM 的文章，核心的想法是剥离，不是完全替换 MVC。</p>
+<p>另外 <a href="http://www.sprynthesis.com/2014/12/06/reactivecocoa-mvvm-introduction/" target="_blank" rel="external">这里</a> 有一篇很好的用 ReactiveCocoa 实现 MVVM 的文章，重点是轻量化 ViewController，组合两种架构，不是完全替换 MVC。</p>
 <p><br></p>
 <h2 id="Reactive_Cocoa">Reactive Cocoa</h2><p>终于进入正题。这个框架，就是吸收了如同 <em>Haskell</em> 这类函数式语言的思想，从微软的 Rx 演化来的。利用它就可以很好的实现 MVVM 的架构，防止臃肿杂乱的 View Controller。</p>
 <p>使用它会进入完全不同的另一种编程思维，用这另一种思维去看以前遇到的问题，就看到新世界的大门了<br><br>(๑•̀ㅂ•́)و✧</p>
