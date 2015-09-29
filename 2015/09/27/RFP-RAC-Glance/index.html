@@ -53,7 +53,7 @@
 
 刚刚发现 ReactiveCocoa 的时候，看到相关的术语 singal、subscriber 之类的，不明觉厉。再加上 FRP - Functional Reactive Programming，我似乎看到了新世界的大门。
 作为初见，希望尽可能地提取关键概念来理解这个非常热门但是有些难懂的框架，减少打开新世界大门的阻力。">
-<meta property="og:updated_time" content="2015-09-29T03:04:44.000Z">
+<meta property="og:updated_time" content="2015-09-29T03:07:56.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ReactiveCocoa 初见">
 <meta name="twitter:description" content="闲话: 听说学 Haskell 可以打开新世界的大门
@@ -242,7 +242,7 @@
 <p>作为初见，希望尽可能地提取关键概念来理解这个非常热门但是有些难懂的框架，减少打开新世界大门的阻力。</p>
 <p><br><br></p>
 <a id="more"></a>
-<h2 id="编程范式_Programming_Paradigm">编程范式 Programming Paradigm</h2><p>在 <em>Wikipedia</em> 上搜索这个关键词的话，就可以看到在这个词条右边列出了几十个编程范式，领略一下前人的脑洞(￣ε(#￣)☆╰╮o(￣皿￣///) 。</p>
+<h2 id="编程范式_Programming_Paradigm">编程范式 Programming Paradigm</h2><p>在 <em>Wikipedia</em> 上搜索这个关键词的话，就可以看到在这个词条右边列出了几十个编程范式，领略一下前人的脑洞。<br><br>(￣ε(#￣)☆╰╮o(￣皿￣///)</p>
 <p>咳咳，对于 <em><a href="https://github.com/ReactiveCocoa/ReactiveCocoa" target="_blank" rel="external">ReactiveCocoa</a></em> 这个框架最先应该我想最先应该了解的是 <em><a href="https://en.wikipedia.org/wiki/Functional_programming" target="_blank" rel="external">Functional Programming</a></em> 和 <em><a href="https://en.wikipedia.org/wiki/Reactive_programming" target="_blank" rel="external">Reactive Programming</a></em></p>
 <h3 id="函数式编程_Functional_Programming">函数式编程 Functional Programming</h3><p>参考 <em>Wikipedia</em> 我的理解是：</p>
 <ul>
@@ -259,7 +259,7 @@
 <p>另外 <a href="http://www.sprynthesis.com/2014/12/06/reactivecocoa-mvvm-introduction/" target="_blank" rel="external">这里</a> 有一篇很好的用 ReactiveCocoa 实现 MVVM 的文章，核心的想法是剥离，不是完全替换 MVC。</p>
 <p><br></p>
 <h2 id="Reactive_Cocoa">Reactive Cocoa</h2><p>终于进入正题。这个框架，就是吸收了如同 <em>Haskell</em> 这类函数式语言的思想，从微软的 Rx 演化来的。利用它就可以很好的实现 MVVM 的架构，防止臃肿杂乱的 View Controller。</p>
-<p>使用它会进入完全不同的另一种编程思维，用这另一种思维去看以前遇到的问题，就看到新世界的大门了(๑•̀ㅂ•́)و✧</p>
+<p>使用它会进入完全不同的另一种编程思维，用这另一种思维去看以前遇到的问题，就看到新世界的大门了<br><br>(๑•̀ㅂ•́)و✧</p>
 <p>RAYWENDERLICH 上的 <a href="http://www.raywenderlich.com/62699/reactivecocoa-tutorial-pt1" target="_blank" rel="external">一篇文章</a> 很详细的介绍了框架基本的用法。不过无论是这篇还是上一节的那篇文章，篇幅都很长，根据本文的初衷，下面总结一下。</p>
 <h3 id="信号_Signal">信号 Signal</h3><p>这个就是最核心的概念，操作都基于对信号的各种处理上。信号就是用来 <strong>承载</strong> 数据的，跟满天飞来飞去的无线电波一样。我们可以对信号做各种处理，像是监听、过滤等等，在 Reactive Cocoa 中的信号非常类似于人们自然理解的信号。</p>
 <h3 id="操作符_Operator">操作符 Operator</h3><p>处理信号使用操作符，代码上其实就是一个参数是 block 的函数。block 里面就是怎么处理信号。框架里面提供了很多操作符，参看 github 上的 <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/tree/master/Documentation" target="_blank" rel="external">文档</a>。</p>
