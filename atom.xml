@@ -5,7 +5,7 @@
   <subtitle><![CDATA[Concentrate on iOS & Web]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://veracruz.github.io//"/>
-  <updated>2015-09-23T21:46:16.000Z</updated>
+  <updated>2015-09-29T03:04:44.000Z</updated>
   <id>http://veracruz.github.io//</id>
   
   <author>
@@ -14,6 +14,95 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[ReactiveCocoa 初见]]></title>
+    <link href="http://veracruz.github.io/2015/09/27/RFP-RAC-Glance/"/>
+    <id>http://veracruz.github.io/2015/09/27/RFP-RAC-Glance/</id>
+    <published>2015-09-26T19:39:49.000Z</published>
+    <updated>2015-09-29T03:04:44.000Z</updated>
+    <content type="html"><![CDATA[<blockquote class="blockquote-center"><br><strong>闲话</strong>: 听说学 Haskell 可以打开新世界的大门<br></blockquote>
+
+<p>刚刚发现 <em><a href="https://github.com/ReactiveCocoa/ReactiveCocoa" target="_blank" rel="external">ReactiveCocoa</a></em> 的时候，看到相关的术语 <em>singal</em>、<em>subscriber</em> 之类的，不明觉厉。再加上 <em>FRP - Functional Reactive Programming</em>，我似乎看到了新世界的大门。</p>
+<p>作为初见，希望尽可能地提取关键概念来理解这个非常热门但是有些难懂的框架，减少打开新世界大门的阻力。</p>
+<p><br><br></p>
+<a id="more"></a>
+<h2 id="编程范式_Programming_Paradigm">编程范式 Programming Paradigm</h2><p>在 <em>Wikipedia</em> 上搜索这个关键词的话，就可以看到在这个词条右边列出了几十个编程范式，领略一下前人的脑洞(￣ε(#￣)☆╰╮o(￣皿￣///) 。</p>
+<p>咳咳，对于 <em><a href="https://github.com/ReactiveCocoa/ReactiveCocoa" target="_blank" rel="external">ReactiveCocoa</a></em> 这个框架最先应该我想最先应该了解的是 <em><a href="https://en.wikipedia.org/wiki/Functional_programming" target="_blank" rel="external">Functional Programming</a></em> 和 <em><a href="https://en.wikipedia.org/wiki/Reactive_programming" target="_blank" rel="external">Reactive Programming</a></em></p>
+<h3 id="函数式编程_Functional_Programming">函数式编程 Functional Programming</h3><p>参考 <em>Wikipedia</em> 我的理解是：</p>
+<ul>
+<li>函数可以作为参数传递</li>
+<li>组合各种函数来实现所需</li>
+</ul>
+<p>还有纯函数式编程语言里没有变量之类的暂时不去深究。这个范式其实在现代编程语言中大多都支持。</p>
+<h3 id="响应式编程_Reactive_Programming">响应式编程 Reactive Programming</h3><p>重点就一个，数据可以随着事件动态变化，就如同 Wiki 中所说的，表达式的结果会因为表达式中的变量改变自动更新。</p>
+<p>那么上面两种范式结合之后是什么？</p>
+<h3 id="函数响应式编程_Functional_Reactive_Programming">函数响应式编程 Functional Reactive Programming</h3><p>重点还是在响应，通过组合函数可以实现复杂的响应过程。</p>
+<p>希望详细了解，<a href="http://www.infoq.com/cn/articles/functional-reactive-programming/" target="_blank" rel="external">这里</a> 有一篇很好的关于 <em>FRP</em> 的文章</p>
+<p><br></p>
+<h2 id="MVC_vs_MVVM">MVC vs MVVM</h2><p>iOS 开发过程中会遇到在一个 View Controller 的文件里，有着几百上千行的代码。View Controller 总是承担着过多的任务，这里 MVVM 的出现就是为了剥离 View Controller 中过多的代码，objc.io 的第一个 issue 就是一篇分离 View Controller 和 Table View 的很好的文章，<a href="https://www.objc.io/issues/1-view-controllers/" target="_blank" rel="external">英文版</a>，<a href="http://www.objccn.io/issue-1/" target="_blank" rel="external">中文版</a>。</p>
+<p>另外 <a href="http://www.sprynthesis.com/2014/12/06/reactivecocoa-mvvm-introduction/" target="_blank" rel="external">这里</a> 有一篇很好的用 ReactiveCocoa 实现 MVVM 的文章，核心的想法是剥离，不是完全替换 MVC。</p>
+<p><br></p>
+<h2 id="Reactive_Cocoa">Reactive Cocoa</h2><p>终于进入正题。这个框架，就是吸收了如同 <em>Haskell</em> 这类函数式语言的思想，从微软的 Rx 演化来的。利用它就可以很好的实现 MVVM 的架构，防止臃肿杂乱的 View Controller。</p>
+<p>使用它会进入完全不同的另一种编程思维，用这另一种思维去看以前遇到的问题，就看到新世界的大门了(๑•̀ㅂ•́)و✧</p>
+<p>RAYWENDERLICH 上的 <a href="http://www.raywenderlich.com/62699/reactivecocoa-tutorial-pt1" target="_blank" rel="external">一篇文章</a> 很详细的介绍了框架基本的用法。不过无论是这篇还是上一节的那篇文章，篇幅都很长，根据本文的初衷，下面总结一下。</p>
+<h3 id="信号_Signal">信号 Signal</h3><p>这个就是最核心的概念，操作都基于对信号的各种处理上。信号就是用来 <strong>承载</strong> 数据的，跟满天飞来飞去的无线电波一样。我们可以对信号做各种处理，像是监听、过滤等等，在 Reactive Cocoa 中的信号非常类似于人们自然理解的信号。</p>
+<h3 id="操作符_Operator">操作符 Operator</h3><p>处理信号使用操作符，代码上其实就是一个参数是 block 的函数。block 里面就是怎么处理信号。框架里面提供了很多操作符，参看 github 上的 <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/tree/master/Documentation" target="_blank" rel="external">文档</a>。</p>
+<p><br></p>
+<h2 id="应用内切换语言">应用内切换语言</h2><p>如果已经看过之前提到的两篇教程文章，相比那接下来的事例会更简单。之前两篇文章都是用了搜索 Twitter 的推文来展示框架的用法，鉴于你懂得的原因，和新浪微博的接口复杂一些，所以我用了这个你想到就会觉得实现起来会很麻烦的功能，也许你也很少会需要实现这个功能。</p>
+<blockquote>
+<p>产品的国际化就像牙线：所有人都知道他们应该使用，却可能都不去用。 — <a href="http://nshipster.cn/nslocale/" target="_blank" rel="external">NSHipster</a></p>
+</blockquote>
+<p>这个例子的完整代码可以在 github 上找到 <a href="https://github.com/Veracruz/RAC-International-Example" target="_blank" rel="external">RAC-International-Example</a></p>
+<p>首先我们先看一下成果</p>
+<image src="/images/2015_9/RAC-International-Example.gif" width="320"></image>
+
+<p>最终在我们需要国际化的地方的代码长这样</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@weakify(<span class="keyword">self</span>);</span><br><span class="line">[LanguageChangedSignal subscribeNext:^(<span class="built_in">NSString</span> *languageCode) &#123;</span><br><span class="line">    @strongify(<span class="keyword">self</span>);</span><br><span class="line">    <span class="keyword">self</span><span class="variable">.languageButton</span><span class="variable">.title</span> = LocalizedString(<span class="string">@"Language"</span>);</span><br><span class="line">    <span class="keyword">self</span><span class="variable">.titleLabel</span><span class="variable">.text</span> = LocalizedString(<span class="string">@"Hello World"</span>);</span><br><span class="line">    [<span class="keyword">self</span><span class="variable">.button</span> setTitle:LocalizedString(<span class="string">@"Button"</span>) forState:<span class="built_in">UIControlStateNormal</span>];</span><br><span class="line">    <span class="keyword">self</span><span class="variable">.label</span><span class="variable">.text</span> = LocalizedString(<span class="string">@"Label"</span>);</span><br><span class="line">    <span class="keyword">self</span><span class="variable">.textView</span><span class="variable">.text</span> = LocalizedString(<span class="string">@"It's s pretty day."</span>);</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+<p>在任何需要国际化的地方只要这么写就可以，看到这么短的代码就知道，其实国际化就是一劳永逸的工作，习惯之后其实非常简单。</p>
+<p><code>@weakify(self)</code> 和 <code>@strongify(self)</code> 是用来方便地解决循环引用的，需要另外包含头文件 <code>#import &quot;EXTScope.h&quot;</code>。</p>
+<h3 id="创建语言管理(视图模型)类">创建语言管理(视图模型)类</h3><p>我们整个的信号流程很简单：修改语言(变化产生数据流) —&gt; 加载语言文件 —&gt; 刷新 UI</p>
+<p>首先呢，不得不放弃 <code>NSLocalizedString</code> 的方法，我还没找到可以直接修改地区的方法。</p>
+<p>创建一个语言管理的单例类</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@class</span> <span class="title">RACSignal</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">LanguageManager</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line">+ (LanguageManager *)shareInstance;</span><br><span class="line"></span><br><span class="line">- (RACSignal *)languageChangedSignal;</span><br><span class="line">- (<span class="built_in">NSString</span> *)localizedString:(<span class="built_in">NSString</span> *)key;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSArray</span> *)languages;</span><br><span class="line">- (<span class="keyword">void</span>)changeLanguageTo:(<span class="built_in">NSString</span> *)language;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#define LanguageViewModel [LanguageManager shareInstance]</span></span><br><span class="line"><span class="preprocessor">#define LocalizedString(key) [LanguageViewModel localizedString:(key)]</span></span><br><span class="line"><span class="preprocessor">#define LanguageChangedSignal [LanguageViewModel languageChangedSignal]</span></span><br></pre></td></tr></table></figure>
+<p><code>languageChangedSignal</code> 方法返回了一个语言变化的信号，用来给全局需要变化的地方订阅用<br><br><code>localizedString:</code> 方法获取当前语言的字符串<br><br><code>languages</code> 方法返回所有支持的语言列表，在语言选择的 Table View 里使用<br><br><code>changeLanguageTo:</code> 方法用来变更当前语言<br><br>另外下面添加了几个使代码整洁的宏。</p>
+<p>我们只需要关注 <code>languageChangedSignal</code> 的实现</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">- (RACSignal *)languageChangedSignal &#123;</span><br><span class="line">    <span class="keyword">if</span> (!_languageChangedSignal) &#123;</span><br><span class="line">        @weakify(<span class="keyword">self</span>);</span><br><span class="line">        <span class="keyword">self</span><span class="variable">.languageChangedSignal</span> = [RACObserve(<span class="keyword">self</span>, currentLanguage) doNext:^(<span class="built_in">NSString</span> *currentLanguage) &#123;</span><br><span class="line">            @strongify(<span class="keyword">self</span>);</span><br><span class="line">            [[<span class="built_in">NSUserDefaults</span> standardUserDefaults] setObject:currentLanguage forKey:<span class="string">@"currentLanguage"</span>];</span><br><span class="line">            <span class="built_in">NSBundle</span> *localizeBundle = [<span class="built_in">NSBundle</span> bundleWithPath:[[<span class="built_in">NSBundle</span> mainBundle] pathForResource:<span class="keyword">self</span><span class="variable">.currentLanguage</span> ofType:<span class="string">@"lproj"</span>]];</span><br><span class="line">            <span class="keyword">self</span><span class="variable">.stringsFile</span> = [[<span class="built_in">NSDictionary</span> alloc] initWithContentsOfFile:[localizeBundle pathForResource:LocalizationFile ofType:<span class="string">@"strings"</span>]];</span><br><span class="line">            <span class="keyword">if</span> (!<span class="keyword">self</span><span class="variable">.stringsFile</span>) &#123;</span><br><span class="line">                <span class="built_in">NSBundle</span> *baseBunble = [<span class="built_in">NSBundle</span> bundleWithPath:[[<span class="built_in">NSBundle</span> mainBundle] pathForResource:<span class="string">@"Base"</span> ofType:<span class="string">@"lproj"</span>]];</span><br><span class="line">                <span class="keyword">self</span><span class="variable">.stringsFile</span> = [[<span class="built_in">NSDictionary</span> alloc] initWithContentsOfFile:[baseBunble pathForResource:LocalizationFile ofType:<span class="string">@"strings"</span>]];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> _languageChangedSignal;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这段代码看起来比较乱，只需要关注 <code>RACObserve</code> 这个框架提供的宏和 <code>doNext:</code> 方法。</p>
+<p><code>RACObserve(self, currentLanguage)</code> 就是创建了 <code>currentLanguage</code> 这个属性的变化的信号。<br><br><code>doNext:^(NSString *currentLanguage) {...}</code> 这个方法是在更改 UI 之前插入需要执行的动作。block 中略长的内容是根据语言代码获取对应的 strings 文件。</p>
+<p>Reactive Cocoa 是基于 KVO 的，所以要注意观察的属性是不是支持 KVO。在这里就是如果你使用下划线的熟悉去修改，就不会发生任何你想要的事，需要使用 setter (<code>self.currentLanguage</code>) 的方式去修改。</p>
+<h3 id="接下来">接下来</h3><p>其实没有接下来了，没错，就是这么简单，核心部分的代码就是这样。</p>
+<p>其他细节实现可以 clone 或下载本示例项目 <a href="https://github.com/Veracruz/RAC-International-Example" target="_blank" rel="external">RAC-International-Example</a></p>
+<p><br></p>
+<h2 id="新世界的大门">新世界的大门</h2><p>新世界的大门打开了，使用 Reactive Cocoa 确实让代码变得很不同，虽然很多陌生的概念，但是当你熟悉和深入了解之后，他就是进入新世界的钥匙。</p>
+<p><br></p>
+<h2 id="附录">附录</h2><ol>
+<li><a href="https://github.com/ReactiveCocoa/ReactiveCocoa" target="_blank" rel="external">Github Repo - ReactiveCocoa</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Functional_programming" target="_blank" rel="external">Wikipedia - Functional Programming</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Reactive_programming" target="_blank" rel="external">Wikipedia - Reactive Programming</a></li>
+<li><a href="http://www.infoq.com/cn/articles/functional-reactive-programming/" target="_blank" rel="external">函数式反应型编程(FRP) —— 实时互动应用开发的新思路</a></li>
+<li><a href="https://www.objc.io/issues/1-view-controllers/" target="_blank" rel="external">objc.io - Lighter View Controllers</a></li>
+<li><a href="http://www.sprynthesis.com/2014/12/06/reactivecocoa-mvvm-introduction/" target="_blank" rel="external">Sprynthesis - ReactiveCocoa and MVVM, an Introduction</a></li>
+<li><a href="http://www.raywenderlich.com/62699/reactivecocoa-tutorial-pt1" target="_blank" rel="external">RayWenderlich ReactiveCocoa Tutorial – The Definitive Introduction</a></li>
+<li><a href="https://github.com/ReactiveCocoa/ReactiveCocoa/tree/master/Documentation" target="_blank" rel="external">Github - ReactiveCocoa Documentation</a></li>
+<li><a href="http://nshipster.cn/nslocale/" target="_blank" rel="external">NSHipster - NSLocale</a></li>
+<li><a href="https://github.com/Veracruz/RAC-International-Example" target="_blank" rel="external">示例代码 - RAC-International-Example</a></li>
+</ol>
+]]></content>
+    <summary type="html">
+    <![CDATA[<blockquote class="blockquote-center"><br><strong>闲话</strong>: 听说学 Haskell 可以打开新世界的大门<br></blockquote>
+
+<p>刚刚发现 <em><a href="https://github.com/ReactiveCocoa/ReactiveCocoa">ReactiveCocoa</a></em> 的时候，看到相关的术语 <em>singal</em>、<em>subscriber</em> 之类的，不明觉厉。再加上 <em>FRP - Functional Reactive Programming</em>，我似乎看到了新世界的大门。</p>
+<p>作为初见，希望尽可能地提取关键概念来理解这个非常热门但是有些难懂的框架，减少打开新世界大门的阻力。</p>
+<p><br /><br /></p>]]>
+    
+    </summary>
+    
+      <category term="RAC" scheme="http://veracruz.github.io/tags/RAC/"/>
+    
+      <category term="iOS" scheme="http://veracruz.github.io/categories/iOS/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[One Word API - (1)]]></title>
