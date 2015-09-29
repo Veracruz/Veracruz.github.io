@@ -53,7 +53,7 @@
 
 刚刚发现 ReactiveCocoa 的时候，看到相关的术语 signal、subscriber 之类的，不明觉厉。再加上 FRP - Functional Reactive Programming，我似乎看到了新世界的大门。
 作为初见，希望尽可能地提取关键概念来理解这个非常热门但是有些难懂的框架，减少打开新世界大门的阻力。">
-<meta property="og:updated_time" content="2015-09-29T21:09:10.000Z">
+<meta property="og:updated_time" content="2015-09-29T21:12:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ReactiveCocoa 初见">
 <meta name="twitter:description" content="闲话: 听说学 Haskell 可以打开新世界的大门
@@ -264,7 +264,7 @@
 <h3 id="信号_Signal">信号 Signal</h3><p>这个就是最核心的概念，操作都基于对信号的各种处理上。信号就是用来 <strong>承载</strong> 数据的，跟满天飞来飞去的无线电波一样。我们可以对信号做各种处理，像是监听、过滤等等，在 Reactive Cocoa 中的信号非常类似于人们自然理解的信号。</p>
 <h3 id="操作符_Operator">操作符 Operator</h3><p>处理信号使用操作符，代码上其实就是一个参数是 block 的函数。block 里面就是怎么处理信号。框架里面提供了很多操作符，参看 github 上的 <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/tree/master/Documentation" target="_blank" rel="external">文档</a>。</p>
 <p><br></p>
-<h2 id="应用内切换语言">应用内切换语言</h2><p>如果已经看过之前提到的两篇教程文章，相比那接下来的事例会更简单。之前两篇文章都是用了搜索 Twitter 的推文来展示框架的用法，鉴于你懂得的原因，和新浪微博的接口复杂一些，所以我用了这个你想到就会觉得实现起来会很麻烦的功能，也许你也很少会需要实现这个功能。</p>
+<h2 id="应用内切换语言">应用内切换语言</h2><p>如果已经看过之前提到的两篇教程文章，相比那接下来的示例会更简单。之前两篇文章都是用了搜索 Twitter 的推文来展示框架的用法，鉴于你懂得的原因，和新浪微博的接口复杂一些，搜索功能也很限制，所以我用了这个想到就会觉得实现起来会很麻烦的功能。</p>
 <blockquote>
 <p>产品的国际化就像牙线：所有人都知道他们应该使用，却可能都不去用。 — <a href="http://nshipster.cn/nslocale/" target="_blank" rel="external">NSHipster</a></p>
 </blockquote>
