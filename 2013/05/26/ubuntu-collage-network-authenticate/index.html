@@ -47,7 +47,7 @@
 <meta property="og:url" content="http://veracruz.github.io/2013/05/26/ubuntu-collage-network-authenticate/index.html">
 <meta property="og:site_name" content="Code in Technicolor">
 <meta property="og:description" content="这是一篇从旧博客迁移来的文章">
-<meta property="og:updated_time" content="2015-07-20T17:23:44.000Z">
+<meta property="og:updated_time" content="2015-11-03T15:20:34.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Ubuntu 下通过校园网认证的办法">
 <meta name="twitter:description" content="这是一篇从旧博客迁移来的文章">
@@ -230,7 +230,8 @@
         <span itemprop="articleBody"><p><em><font color="gray">这是一篇从旧博客迁移来的文章</font></em></p>
 <a id="more"></a>
 <p><br></p>
-<h3 id="概述">概述</h3><hr>
+<p>###概述</p>
+<hr>
 <p>本身有很多种通过认证的办法：</p>
 <ol>
 <li>学校有提供 linux 版本的认证程序</li>
@@ -242,23 +243,30 @@
 <p>估计可以用 <em>wine</em> 运行的认证比较少，毕竟需要底层硬件操作</p>
 <p>本次操作的环境是 <em>ubuntu 13.04</em></p>
 <p><br><br></p>
-<h3 id="解决办法">解决办法</h3><hr>
+<p>###解决办法</p>
+<hr>
 <p>这里大致的说一下第四种办法：</p>
-<h4 id="一、首先安装虚拟机，virtual_box_、vmware_或者其他的都可以">一、首先安装虚拟机，<em>virtual box</em> 、<em>vmware</em> 或者其他的都可以 <br><br></h4><h4 id="二、virtual_box_的安装直接在软件中心就有，关于_vmware_安装可能会遇到一些问题：">二、<em>virtual box</em> 的安装直接在软件中心就有，关于 <em>vmware</em> 安装可能会遇到一些问题：</h4><ol>
+<p>####一、首先安装虚拟机，<em>virtual box</em> 、<em>vmware</em> 或者其他的都可以 <br><br></p>
+<p>####二、<em>virtual box</em> 的安装直接在软件中心就有，关于 <em>vmware</em> 安装可能会遇到一些问题：</p>
+<ol>
 <li>尽量从官网下载最新版本的 <em>vmware workstation for linux</em> ， 我这里版本是<code>9.0.2</code>，非官方的版本可能会出现一个找不到 <code>kernel-header</code> 的错误</li>
 <li>下载之后的文件是 <code>bundle</code> 格式的，将下载好的文件放到 linux 下的分区，桌面即可，将属性里面的可执行选项打钩，或者命令 <code>sudo chmod +x vmware.bundle</code> ，然后在终端里直接运行</li>
 <li>关于序列号，度娘灰常清楚，不过会出现点输入序列号没有反应的情况，终端下用命令：</li>
 </ol>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/lib/vmware/bin/vmware-vmx --new-sn JV2ZX-<span class="number">8</span>R10P-MZV89-E98NK-<span class="number">9</span>A8LM</span><br></pre></td></tr></table></figure>
 <p>   这个序列号 <code>9.0.2</code> 版本是有效的，无效请百度</p>
-<h4 id="三、我这里用_vmware_，新建一个虚拟机，安装一个xp，这个步骤和_windows_下的使用方法是一样的，百度有很多的介绍">三、我这里用 <em>vmware</em> ，新建一个虚拟机，安装一个xp，这个步骤和 <em>windows</em> 下的使用方法是一样的，百度有很多的介绍<br><br></h4><h4 id="四、在_xp_里安装认证">四、在 xp 里安装认证<br><br></h4><h4 id="五、接下来是重点，用双网卡来完成真机的代理：">五、接下来是重点，用双网卡来完成真机的代理：</h4><ol>
+<p>####三、我这里用 <em>vmware</em> ，新建一个虚拟机，安装一个xp，这个步骤和 <em>windows</em> 下的使用方法是一样的，百度有很多的介绍<br><br></p>
+<p>####四、在 xp 里安装认证<br><br></p>
+<p>####五、接下来是重点，用双网卡来完成真机的代理：</p>
+<ol>
 <li>在 xp 里的网络连接里设置好本地连接，根据不同的校园网环境设置 </li>
 <li>在 <em>vmware</em> 的虚拟机设置里，添加一个新的网卡硬件，并且选择 <code>host-only</code></li>
 <li>回到 xp 的网络连接，出现一个新的本地连接，属性里的 IP 设置为自动获取</li>
 <li>在 xp 里下载安装 <em>ccproxy 2010</em> ，直接打开默认设置就ok</li>
 <li>回到真机，现在可以直接通过代理来上网了，代理的 ip 是 本地连接2 的 ip 地址，<em>ccproxy</em> 如果是默认设置的话端口是 808</li>
 </ol>
-<h4 id="六、一些其他问题：">六、一些其他问题：</h4><ol>
+<p>####六、一些其他问题：</p>
+<ol>
 <li>关于是否能在虚拟机内认证后直接在真机上网，这个跟认证方式有关，有说可以通过在真机的连接设置里将克隆 MAC 填写与虚拟机内的连接一致即可，不过在我这里的环境下无效，无论 <em>vmware</em> 连接设置为 <code>NAT</code> 还是 <code>Bridge</code>。</li>
 <li><em>ubuntu</em> 下全局代理的问题，我尝试过 <code>export http_proxy=http://address:port</code> 无效，尝试过在 xp 里设置 vpn，从外面连接进去，没有成功，可以连接，不能上网，有时候也会连不上。</li>
 <li>如果没有成功的设置好全局代理的话，终端环境下不能连接 internet，其他的未知</li>
@@ -396,7 +404,7 @@
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决办法"><span class="nav-number">2.</span> <span class="nav-text">解决办法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一、首先安装虚拟机，virtual_box_、vmware_或者其他的都可以"><span class="nav-number">2.1.</span> <span class="nav-text">一、首先安装虚拟机，virtual box 、vmware 或者其他的都可以 </span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、virtual_box_的安装直接在软件中心就有，关于_vmware_安装可能会遇到一些问题："><span class="nav-number">2.2.</span> <span class="nav-text">二、virtual box 的安装直接在软件中心就有，关于 vmware 安装可能会遇到一些问题：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、我这里用_vmware_，新建一个虚拟机，安装一个xp，这个步骤和_windows_下的使用方法是一样的，百度有很多的介绍"><span class="nav-number">2.3.</span> <span class="nav-text">三、我这里用 vmware ，新建一个虚拟机，安装一个xp，这个步骤和 windows 下的使用方法是一样的，百度有很多的介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、在_xp_里安装认证"><span class="nav-number">2.4.</span> <span class="nav-text">四、在 xp 里安装认证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#五、接下来是重点，用双网卡来完成真机的代理："><span class="nav-number">2.5.</span> <span class="nav-text">五、接下来是重点，用双网卡来完成真机的代理：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#六、一些其他问题："><span class="nav-number">2.6.</span> <span class="nav-text">六、一些其他问题：</span></a></li></ol></li></ol></div>
+              <p class="post-toc-empty">此文章未包含目录</p>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

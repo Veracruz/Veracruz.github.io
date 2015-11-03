@@ -47,7 +47,7 @@
 <meta property="og:url" content="http://veracruz.github.io/2013/05/31/ubuntu-13-dot-04-some-option/index.html">
 <meta property="og:site_name" content="Code in Technicolor">
 <meta property="og:description" content="这是一篇从旧博客迁移来的文章">
-<meta property="og:updated_time" content="2015-07-20T17:23:38.000Z">
+<meta property="og:updated_time" content="2015-11-03T15:20:34.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Ubuntu 13.04 的几个常用设置(grub背景、自动挂载、网络连接设置)">
 <meta name="twitter:description" content="这是一篇从旧博客迁移来的文章">
@@ -228,17 +228,14 @@
 
       
         <span itemprop="articleBody"><p><em><font color="gray">这是一篇从旧博客迁移来的文章</font></em><br><a id="more"></a><br><br></p>
-<h3 id="grub的背景设置">grub的背景设置</h3><hr>
-<p>root权限下修改<code>/boot/grub.d/05_debian_theme</code><br><br>在ubuntu 13.04下的这个文件中有一行是<br><code>for background in .jpg ...    ... do</code> <br><br>中间还有很多格式我省略掉了 这行可以用这种格式添加你的图片目录<code>{/home/xxx/}</code><br><br>之后<code>sudo update-grub</code>就ok</p>
+<h2 id="###grub的背景设置">###grub的背景设置</h2><p>root权限下修改<code>/boot/grub.d/05_debian_theme</code><br><br>在ubuntu 13.04下的这个文件中有一行是<br><code>for background in .jpg ...    ... do</code> <br><br>中间还有很多格式我省略掉了 这行可以用这种格式添加你的图片目录<code>{/home/xxx/}</code><br><br>之后<code>sudo update-grub</code>就ok</p>
 <p>注：前面都是废话:p，它上面有一句注释，直接把图片放到<code>/boot/grub/</code>下然后<code>sudo update-grub</code>就ok了<br><br><br></p>
-<h3 id="硬盘分区自动挂载">硬盘分区自动挂载</h3><hr>
-<p>去修改一个文件就ok <br><br><code>/etc/fstab</code> <br><br>这个文件的格式如下：</p>
+<h2 id="###硬盘分区自动挂载">###硬盘分区自动挂载</h2><p>去修改一个文件就ok <br><br><code>/etc/fstab</code> <br><br>这个文件的格式如下：</p>
 <table><br>    <th>设备</th><br>    <th>挂载位置</th><br>    <th>分区格式</th><br>    <th>挂载选项</th><br>    <th>dump(备份)</th><br>    <th>fsck(磁盘检查)</th><br>    <tr><br>        <td>/dev/sda1</td><br>        <td>/media/c</td><br>        <td>ntds</td><br>        <td>defaults</td><br>        <td>0</td><br>        <td>0</td><br>    </tr><br></table>
 
 <p>上面这个例子就是自动挂载的例子，在分区管理器(ubuntu自带)中可以查看你的磁盘对应的标签<code>sda1</code>还是<code>sda2</code>还是其他的 <br><br>挂载位置可以自选，一般在<code>/media/</code>下 <br><br>挂载选项有7个，一般用不到，<code>defaults</code>就ok，剩下两项一般0就可以</p>
 <p>另外：如果因为修改了fstab而导致不能开机的话，要用 <em>ubuntu liveCD</em> 进去之后修改原来系统的<code>fstab</code>，提前做好准备<br><br><br></p>
-<h3 id="网络连接的一个问题">网络连接的一个问题</h3><hr>
-<p>关于手动设置了ip等之后重启系统会自动新建一个连接的问题，自己新建一个连接，手动设置好ip，在限制到接口那个选项要选任意，默认是<code>eth0</code></p>
+<h2 id="###网络连接的一个问题">###网络连接的一个问题</h2><p>关于手动设置了ip等之后重启系统会自动新建一个连接的问题，自己新建一个连接，手动设置好ip，在限制到接口那个选项要选任意，默认是<code>eth0</code></p>
 </span>
       
     </div>
@@ -371,7 +368,7 @@
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#grub的背景设置"><span class="nav-number">1.</span> <span class="nav-text">grub的背景设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#硬盘分区自动挂载"><span class="nav-number">2.</span> <span class="nav-text">硬盘分区自动挂载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络连接的一个问题"><span class="nav-number">3.</span> <span class="nav-text">网络连接的一个问题</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="####grub的背景设置"><span class="nav-number">1.</span> <span class="nav-text">###grub的背景设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="####硬盘分区自动挂载"><span class="nav-number">2.</span> <span class="nav-text">###硬盘分区自动挂载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="####网络连接的一个问题"><span class="nav-number">3.</span> <span class="nav-text">###网络连接的一个问题</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>
