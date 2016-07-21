@@ -1,0 +1,741 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+    <link href='//fonts.lug.ustc.edu.cn/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+  
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Code in Technicolor" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="总结一下 AFNetworking 和 ASIHTTPRequest 两个网络库的基本使用以及一些问题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AFNetworking & ASIHTTPRequest 的初步使用方法">
+<meta property="og:url" content="http://veracruz.github.io/2014/07/16/afnetworking-and-asihttprequest/index.html">
+<meta property="og:site_name" content="Code in Technicolor">
+<meta property="og:description" content="总结一下 AFNetworking 和 ASIHTTPRequest 两个网络库的基本使用以及一些问题">
+<meta property="og:updated_time" content="2015-11-19T01:28:59.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AFNetworking & ASIHTTPRequest 的初步使用方法">
+<meta name="twitter:description" content="总结一下 AFNetworking 和 ASIHTTPRequest 两个网络库的基本使用以及一些问题">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> AFNetworking & ASIHTTPRequest 的初步使用方法 | Code in Technicolor </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?1927408f733bc1f82c711c8aece7a832";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Code in Technicolor</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Concentrate on iOS & Web</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                AFNetworking & ASIHTTPRequest 的初步使用方法
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2014-07-16T13:54:07+08:00" content="2014-07-16">
+              2014-07-16
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2014/07/16/afnetworking-and-asihttprequest/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2014/07/16/afnetworking-and-asihttprequest/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>总结一下 <em>AFNetworking</em> 和 <em>ASIHTTPRequest</em> 两个网络库的基本使用以及一些问题</p>
+<a id="more"></a>
+<p>首先到 <em>github</em> 下载这两个库，<em>ASIHTTPRequest</em> 从2011年就停止更新了，写这篇文章的时候 <em>AFNetworking</em> 的版本是 <code>2.3.1</code>。</p>
+<p>当前使用的环境是</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Mac OS X <span class="number">10.9</span><span class="number">.4</span></span><br><span class="line">Xcode <span class="number">5.1</span><span class="number">.1</span></span><br><span class="line">iOS <span class="number">7.1</span></span><br></pre></td></tr></table></figure>
+<p>下面是两个库的地址</p>
+<p><code>https://github.com/pokeb/asi-http-request</code></p>
+<p><code>https://github.com/AFNetworking/AFNetworking</code></p>
+<p>这两个库都封装了网络的一些操作，可以方便的进行各种Request，包含一些高级的功能，另外还有一个库MKNetworking可以选择，下面有一个对比的表格，转载自 <a href="http://www.cnblogs.com/snake-hand/p/3177938.html" target="_blank" rel="external">AFNetworking、MKNetworkKit和ASIHTTPRequest对比</a></p>
+<table class="ynote_table" style="border-width: 1px; border-style: solid; border-color: #999999; border-collapse: collapse; margin: 6px auto; width: 100%;" border="1" cellspacing="0" cellpadding="2"><br><tbody><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>&nbsp;</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>AFNetworking</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>MKNetworkKit</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">ASIHTTPRequest</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">更新情况</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">维护和使用者相对多</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">维护和使用者相对少</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">停止更新</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>支持iOS和OSX</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>是</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>是</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>ARC</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>是</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>是</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>断点续传</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><span style="font-size: 12px; line-height: 18px;">否，可通过</span><span style="font-size: 12px; line-height: 18px;">AFDownloadRequestOperation</span></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">同步异步请求</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">只支持异步</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>图片缓存到本地</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>否，通过SDURLCache或AFCache</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>否</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>图片缓存到内存</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>是</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">后台下载</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">下载进度</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否，可通过AFDownloadRequestOperation</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">缓存离线请求</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否，<span style="font-size: 12px; line-height: 18px;">通过SDURLCache或AFCache</span></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">JSON、XML</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br></tr><br></tbody><br></table>
+
+<p><br><br><br></p>
+<h2 id="AFNetworking">AFNetworking</h2><p>这个框架现在的版本和以前的用法有一些区别，而且有一些设置比较隐蔽。其中扩展了一些系统的UI类，可以非常方便的使用UIProgressView、UIImageView等实现进度条，图片加载等功能。</p>
+<p><br><br></p>
+<h3 id="导入库">导入库</h3><hr>
+<p>只要将下载之后的目录下的 <code>AFNetworking</code> 和 <code>UIKit+AFNetworking</code> 两个文件夹导入到工程即可，并且不需要添加其他框架。</p>
+<p><br><br></p>
+<h3 id="GET请求并解析JSON">GET请求并解析JSON</h3><hr>
+<p>它有自己的管理类，这种请求非常简单明了，会直接解析JSON到一个 <code>NSDictionary</code>，当然前提是返回的响应是很规范的，可是很多时候并不是这样。这种请求方式要求响应头中的 <code>Content-type</code> 字段的值必须是 <code>text/json</code>，也就是<code>Content-type: text/json</code>。很多时候返回的响应头这个字段的值是 <code>text/html</code>, 这个时候这个库就会返回一个错误。当然错误格式的JSON数据也会返回错误。下面是调用的代码段.</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];</span><br><span class="line">    </span><br><span class="line"><span class="comment">//设置支持所有的MIME格式，略隐蔽的设置选项</span></span><br><span class="line">manager<span class="variable">.responseSerializer</span><span class="variable">.acceptableContentTypes</span> = <span class="literal">nil</span>;</span><br><span class="line">    </span><br><span class="line">[manager GET:JSON_URL parameters:<span class="literal">nil</span> success:^(AFHTTPRequestOperation *operation, <span class="keyword">id</span> responseObject) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@ : "</span>, [responseObject class], responseObject);</span><br><span class="line">    &#125; failure:^(AFHTTPRequestOperation *operation, <span class="built_in">NSError</span> *error) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"error : %@"</span>, error);</span><br><span class="line">    &#125;];</span><br></pre></td></tr></table></figure>
+<p><br><br></p>
+<h3 id="通用请求">通用请求</h3><hr>
+<p>这个库提供了响应的序列化器(serializer)，就是解析器，这个可以自己定制，如果不指定则不会解析，仅接收原始数据在block的参数 <code>responseObject</code> 中。<code>operation</code>有很多有用的属性，例如<code>operation.response.allHeaderFields</code> 可以查看完整的响应头。下面这段代码指定了XML的序列化器。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSURLRequest</span> *request = [<span class="built_in">NSURLRequest</span> requestWithURL:[<span class="built_in">NSURL</span> URLWithString:SOME_URL]];</span><br><span class="line">AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];</span><br><span class="line">    </span><br><span class="line"><span class="comment">//指定序列化器</span></span><br><span class="line">operation<span class="variable">.responseSerializer</span> = [AFXMLParserResponseSerializer serializer];</span><br><span class="line">    </span><br><span class="line">[operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, <span class="keyword">id</span> responseObject) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@ : "</span>, [responseObject class], responseObject);</span><br><span class="line">    &#125; failure:^(AFHTTPRequestOperation *operation, <span class="built_in">NSError</span> *error) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"error : %@"</span>, error);</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">[[<span class="built_in">NSOperationQueue</span> mainQueue] addOperation:operation];</span><br><span class="line">```从上面的代码的输出可以看到，它使用了iOS自带的XML解析器。</span><br><span class="line"><span class="preprocessor">### 文件下载保存</span></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">下面的代码很方便的实现了一个文件的下载。</span><br><span class="line">```objectivec </span><br><span class="line">AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:[<span class="built_in">NSURLSessionConfiguration</span> defaultSessionConfiguration]];</span><br><span class="line"><span class="built_in">NSURLRequest</span> *request = [<span class="built_in">NSURLRequest</span> requestWithURL:[<span class="built_in">NSURL</span> URLWithString:FILE_URL]];</span><br><span class="line">    </span><br><span class="line"><span class="built_in">NSURLSessionDownloadTask</span> *task = [manager downloadTaskWithRequest:request progress:<span class="literal">nil</span> destination:^<span class="built_in">NSURL</span> *(<span class="built_in">NSURL</span> *targetPath, <span class="built_in">NSURLResponse</span> *response)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="built_in">NSURL</span> *documentURL = [[<span class="built_in">NSFileManager</span> defaultManager] URLForDirectory:<span class="built_in">NSDocumentDirectory</span> inDomain:<span class="built_in">NSUserDomainMask</span> appropriateForURL:<span class="literal">nil</span> create:<span class="literal">NO</span> error:<span class="literal">nil</span>];</span><br><span class="line">    <span class="keyword">return</span> [documentURL URLByAppendingPathComponent:FILE_NAME];</span><br><span class="line">    &#125; completionHandler:^(<span class="built_in">NSURLResponse</span> *response, <span class="built_in">NSURL</span> *filePath, <span class="built_in">NSError</span> *error)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"error : %@"</span>, error);</span><br><span class="line">    &#125;];</span><br><span class="line"></span><br><span class="line"><span class="comment">//不要忘记开始任务</span></span><br><span class="line">[task resume];</span><br></pre></td></tr></table></figure>
+<p><br><br><br></p>
+<h2 id="ASIHTTPRequest">ASIHTTPRequest</h2><p>这个停止更新很久的库使用的是MRC，并且在新的系统中使用可能会遇到一些问题，但确实一个很好地库，支持断点续传、缓存、身份验证等等。</p>
+<p><br><br></p>
+<h3 id="导入库-1">导入库</h3><hr>
+<p>下载库之后，将目录下的 <code>Classes</code> 和 <code>External</code> 文件夹导入到项目中，这并不是完整的导入，它的单元测试模块的一些文件并不包含在这个目录中，需要用 <em>ruby</em> 相关的命令来导入。这里只需要删除 <code>Classes</code> 目录下的 <code>Test</code> 删除即可。</p>
+<p><br><br></p>
+<p>###项目设置</p>
+<hr>
+<p>需要添加以下框架和库</p>
+<p><code>CFNetworking.framework</code><br><code>SystemConfiguration.framework</code><br><code>MobileCoreServices.framework</code><br><code>libz.dylib</code><br><code>libxml2.dylib</code></p>
+<p>还要在项目的 <code>Build Settings</code> 中的 <code>Header Search Paths</code> 字段中添加 <code>/usr/include/libxml2/</code>。</p>
+<p>如果项目是ARC，请在这个库的所有文件添加标签 <code>-fnobjectivec-arc</code>，在 <code>Build Phases</code> 中的 <code>Compile Sources</code>。或者也可以把项目改成mrc而你自己创建的文件添加标签 <code>-fobjectivec-arc</code>。</p>
+<p>另外在64位的iOS系统下会有很多类型警告，按照推荐的修改即可。</p>
+<p><br><br></p>
+<h3 id="数据请求">数据请求</h3><hr>
+<p>有同步和异步请求，同步的意义不大，这里给出异步请求。请求的处理有两种方式，一种是代理，一种是 <code>block</code>。下面给出 <code>block</code> 方式的，代理方式在 <code>ASIHTTPRequestDelegate</code> 的文件中的定义很容易理解。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSURL</span> *url = [<span class="built_in">NSURL</span> URLWithString:SOME_URL];</span><br><span class="line">    </span><br><span class="line"><span class="comment">//使用__weak来防止使用block出现的retain循环</span></span><br><span class="line">__<span class="keyword">weak</span> ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];</span><br><span class="line">    </span><br><span class="line"><span class="comment">//使用代理方式则添加下面这句</span></span><br><span class="line"><span class="comment">//request.delegate = self;</span></span><br><span class="line">    </span><br><span class="line">[request setCompletionBlock:^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>, request<span class="variable">.responseString</span>);</span><br><span class="line">    &#125;];</span><br><span class="line">[request setFailedBlock:^&#123;</span><br><span class="line">	<span class="built_in">NSLog</span>(<span class="string">@"%@"</span>, request<span class="variable">.error</span>);</span><br><span class="line">    &#125;];</span><br><span class="line">[request startAsynchronous];</span><br></pre></td></tr></table></figure>
+<p><br><br></p>
+<h3 id="文件下载缓存">文件下载缓存</h3><hr>
+<p>支持多种缓存策略，这里使用永久缓存的策略。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSURL</span> *url = [<span class="built_in">NSURL</span> URLWithString:FILE_URL];</span><br><span class="line">__<span class="keyword">weak</span> ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];</span><br><span class="line">    </span><br><span class="line">request<span class="variable">.downloadCache</span> = [ASIDownloadCache sharedCache];</span><br><span class="line">    </span><br><span class="line"><span class="comment">//指定缓存策略</span></span><br><span class="line">request<span class="variable">.cachePolicy</span> = ASIOnlyLoadIfNotCachedCachePolicy;</span><br><span class="line">    </span><br><span class="line">[request setCompletionBlock:^&#123;</span><br><span class="line">    [request<span class="variable">.responseData</span> writeToFile:LO<span class="built_in">CAL_FILE_URL</span> atomically:<span class="literal">YES</span>];</span><br><span class="line">    &#125;];</span><br><span class="line">[request setFailedBlock:^&#123;</span><br><span class="line">  	<span class="built_in">NSLog</span>(<span class="string">@"%@"</span>, request<span class="variable">.error</span>);</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">[request startAsynchronous];</span><br></pre></td></tr></table></figure>
+<p>下载任务是支持进度显示的，需要用一个UIProgressView代理，和设置显示精确进度，下面两句</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">request<span class="variable">.showAccurateProgress</span> = <span class="literal">YES</span>;</span><br><span class="line">request<span class="variable">.downloadProgressDelegate</span> = progressView;</span><br></pre></td></tr></table></figure>
+<h2 id="—">—</h2><p><br><br></p>
+<p>以上就是两个库的基本用法，还有一些上传数据，身份验证等等点击下面的参考资料中的链接查看。</p>
+<p><br><br><br><br></p>
+<h4 id="参考资料">参考资料</h4><hr>
+<ol>
+<li><a href="http://mobile.51cto.com/iphone-405168.htm" target="_blank" rel="external">专题：iOS教程之ASIHttpRequest完全攻略</a></li>
+<li><a href="http://allseeing-i.com/ASIHTTPRequest/How-to-use" target="_blank" rel="external">ASIHTTPRequest 官方文档</a></li>
+<li><a href="http://cocoadocs.org/docsets/AFNetworking/2.3.1/index.html" target="_blank" rel="external">AFNetworking 官方文档</a></li>
+</ol>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2014/07/14/how-to-create-your-own-blog-on-github-pages/" rel="next" title="使用Github + Octopress建立博客">
+                <i class="fa fa-chevron-left"></i> 使用Github + Octopress建立博客
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2014/07/17/core-animation/" rel="prev" title="Core Animation 中的3D变换以及简单应用">
+                Core Animation 中的3D变换以及简单应用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2014/07/16/afnetworking-and-asihttprequest/"
+           data-title="AFNetworking & ASIHTTPRequest 的初步使用方法" data-url="http://veracruz.github.io/2014/07/16/afnetworking-and-asihttprequest/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/avatar.png" alt="Vez" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">Vez</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">爱折腾的人</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">19</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#AFNetworking"><span class="nav-number">1.</span> <span class="nav-text">AFNetworking</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#导入库"><span class="nav-number">1.1.</span> <span class="nav-text">导入库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GET请求并解析JSON"><span class="nav-number">1.2.</span> <span class="nav-text">GET请求并解析JSON</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通用请求"><span class="nav-number">1.3.</span> <span class="nav-text">通用请求</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ASIHTTPRequest"><span class="nav-number">2.</span> <span class="nav-text">ASIHTTPRequest</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#导入库-1"><span class="nav-number">2.1.</span> <span class="nav-text">导入库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据请求"><span class="nav-number">2.2.</span> <span class="nav-text">数据请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件下载缓存"><span class="nav-number">2.3.</span> <span class="nav-text">文件下载缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#—"><span class="nav-number">3.</span> <span class="nav-text">—</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#参考资料"><span class="nav-number">3.0.1.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Vez</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"veracruz"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

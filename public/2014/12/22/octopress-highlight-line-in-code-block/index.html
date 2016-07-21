@@ -1,0 +1,721 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+    <link href='//fonts.lug.ustc.edu.cn/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+  
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Code in Technicolor" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="在 Octopress 的官方文档中看到，反引号代码块(Backtick Code Block)是有高亮行的功能的
+But">
+<meta property="og:type" content="article">
+<meta property="og:title" content="为 Octopress 中的代码块添加高亮行的功能">
+<meta property="og:url" content="http://veracruz.github.io/2014/12/22/octopress-highlight-line-in-code-block/index.html">
+<meta property="og:site_name" content="Code in Technicolor">
+<meta property="og:description" content="在 Octopress 的官方文档中看到，反引号代码块(Backtick Code Block)是有高亮行的功能的
+But">
+<meta property="og:image" content="http://veracruz.github.io/images/2014_12/backtick_codeblock.png">
+<meta property="og:updated_time" content="2015-11-19T01:28:59.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="为 Octopress 中的代码块添加高亮行的功能">
+<meta name="twitter:description" content="在 Octopress 的官方文档中看到，反引号代码块(Backtick Code Block)是有高亮行的功能的
+But">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> 为 Octopress 中的代码块添加高亮行的功能 | Code in Technicolor </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?1927408f733bc1f82c711c8aece7a832";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Code in Technicolor</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Concentrate on iOS & Web</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                为 Octopress 中的代码块添加高亮行的功能
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2014-12-22T10:07:49+08:00" content="2014-12-22">
+              2014-12-22
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Blog-Relations/" itemprop="url" rel="index">
+                    <span itemprop="name">Blog Relations</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2014/12/22/octopress-highlight-line-in-code-block/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2014/12/22/octopress-highlight-line-in-code-block/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>在 <em>Octopress</em> 的官方文档中看到，反引号代码块(Backtick Code Block)是有高亮行的功能的</p>
+<p style="font-size:30px;color:red">But</p>
+
+<a id="more"></a>
+<p>我们先看这个网页 – <a href="http://octopress.org/docs/plugins/backtick-codeblock/" target="_blank" rel="external">Backtick Code Blocks</a></p>
+<p><img src="/images/2014_12/backtick_codeblock.png" alt="官方文档截图"></p>
+<p>截图时间 2014.12.22</p>
+<p>事实上是无论我把 <code>mark:1, 2-3</code> 这种类似的写在任何地方都没效果。也许是我打开的方式不对，万能的 StackOverflow 上也没找到相关的解决办法，然后只好去查看代码。</p>
+<p>处理反引号代码块的代码在 <code>/plugins/backtick_code_block.rb</code> <code>/plugins/pygments_code.rb</code> 两个文件中。两段代码都很短，其中并没有包含高亮行的处理，虽然没有注释，但是很容易看懂(论命名的重要性(〜￣△￣)〜)，所以自己把这个功能加上吧。</p>
+<p>顺带一提，<em>Pygments</em> 支持的语言还是相当多的，看这里 ~~ <a href="http://pygments.org/docs/lexers/" target="_blank" rel="external">Available lexers - Pygments</a></p>
+<p><br></p>
+<div class="post_attention"><b>Attention: </b>不识别同时含有标题、链接等的参数。未做样式兼容。高亮背景宽度是个坑爹的固定值。以后可能会更新<em>(:3」∠)</em></div>
+
+<p><br></p>
+<h3 id="确定格式">确定格式</h3><hr>
+<p>第一次改动就先不考虑太多，把处理这个行高亮的情况单独处理，也就是不能同时有标题链接等参数。格式就使用官方给出的格式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#10;ruby mark:#, #-#&#10; # some codes</span><br></pre></td></tr></table></figure>
+<p>正则表达式就是 (ruby 中的)</p>
+<p><code>/([^\s]+)\s+mark:\s?([\s0-9,-]*)/i</code></p>
+<p>通过 <code>$1</code> <code>$2</code> 分别取到代码块的语言和需要高亮的行。</p>
+<p>渲染代码块的函数是 <code>/plugins/pygments_code.rb</code> 中的 <code>highlight (str, lang)</code>，然后里面又调用了 <code>tableize_code (str, lang = &#39;&#39;)</code> ，要把 mark 的参数加进去，具体下面会直接上代码，很简单，已注释。</p>
+<p>另外高亮的样式也要自己处理一下，暂时使用一个牵强的解决办法 【 (╯‵□′)╯︵┻━┻ 怎么不好好看 css</p>
+<p>在 <code>/source/_includes/custom/_footer.html</code> 中加入处理 <code>highlight_line</code> 的样式</p>
+<p><br><br></p>
+<h3 id="上代码">上代码</h3><hr>
+<p>直接下载覆盖到指定路径 – <a href="/document/octopress_highlight_line_code.zip">给 Octopress 代码块添加高亮指定行的代码</a></p>
+<p>三段代码重点已高亮并注释，注意高亮样式处理可能会在一些浏览器中看不到(比如说，坑爹 IE (:3」∠))，未做兼容。</p>
+<p><code>/plugins/backtick_code_block.rb</code> 内容</p>
+<figure class="highlight ruby"><figcaption><span>mark: 9, 23, 25-30, 50-52</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span> <span class="string">'./plugins/pygments_code'</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">module</span> <span class="title">BacktickCodeBlock</span></span></span><br><span class="line">  <span class="keyword">include</span> <span class="constant">HighlightCode</span></span><br><span class="line">  <span class="constant">AllOptions</span> = <span class="regexp">/([^\s]+)\s+(.+?)\s+(https?:\/\/\S+|\/\S+)\s*(.+)?/i</span></span><br><span class="line">  <span class="constant">LangCaption</span> = <span class="regexp">/([^\s]+)\s*(.+)?/i</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># hightlight specific line option grep</span></span><br><span class="line">  <span class="constant">MarkOptions</span> = <span class="regexp">/([^\s]+)\s+mark:\s?([\s0-9,-]*)/i</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">render_code_block</span><span class="params">(input)</span></span></span><br><span class="line">    <span class="variable">@options</span> = <span class="keyword">nil</span></span><br><span class="line">    <span class="variable">@caption</span> = <span class="keyword">nil</span></span><br><span class="line">    <span class="variable">@lang</span> = <span class="keyword">nil</span></span><br><span class="line">    <span class="variable">@url</span> = <span class="keyword">nil</span></span><br><span class="line">    <span class="variable">@title</span> = <span class="keyword">nil</span></span><br><span class="line"></span><br><span class="line">    input.gsub(<span class="regexp">/^`&#123;3&#125; *([^\n]+)?\n(.+?)\n`&#123;3&#125;/m</span>) <span class="keyword">do</span></span><br><span class="line">      <span class="variable">@options</span> = <span class="variable">$1</span> || <span class="string">''</span></span><br><span class="line">      str = <span class="variable">$2</span></span><br><span class="line"></span><br><span class="line">      <span class="comment"># mark line number origin string</span></span><br><span class="line">      <span class="variable">@mark</span> = <span class="keyword">nil</span></span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> <span class="variable">@options</span> =~ <span class="constant">MarkOptions</span></span><br><span class="line">        <span class="variable">@lang</span> = <span class="variable">$1</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># get origin line number string, Example: "1, 2-5" means highlight line 1 and 2,3,4,5</span></span><br><span class="line">        <span class="variable">@mark</span> = <span class="variable">$2</span></span><br><span class="line"></span><br><span class="line">      <span class="keyword">elsif</span> <span class="variable">@options</span> =~ <span class="constant">AllOptions</span></span><br><span class="line">        <span class="variable">@lang</span> = <span class="variable">$1</span></span><br><span class="line">        <span class="variable">@caption</span> = <span class="string">"&lt;figcaption&gt;&lt;span&gt;<span class="subst">#&#123;<span class="variable">$2</span>&#125;</span>&lt;/span&gt;&lt;a href='<span class="subst">#&#123;<span class="variable">$3</span>&#125;</span>'&gt;<span class="subst">#&#123;<span class="variable">$4</span> || <span class="string">'link'</span>&#125;</span>&lt;/a&gt;&lt;/figcaption&gt;"</span></span><br><span class="line">      <span class="keyword">elsif</span> <span class="variable">@options</span> =~ <span class="constant">LangCaption</span></span><br><span class="line">        <span class="variable">@lang</span> = <span class="variable">$1</span></span><br><span class="line">        <span class="variable">@caption</span> = <span class="string">"&lt;figcaption&gt;&lt;span&gt;<span class="subst">#&#123;<span class="variable">$2</span>&#125;</span>&lt;/span&gt;&lt;/figcaption&gt;"</span></span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> str.match(<span class="regexp">/\A( &#123;4&#125;|\t)/</span>)</span><br><span class="line">        str = str.gsub(<span class="regexp">/^( &#123;4&#125;|\t)/</span>, <span class="string">''</span>)</span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">      <span class="keyword">if</span> <span class="variable">@lang</span>.<span class="keyword">nil</span>? || <span class="variable">@lang</span> == <span class="string">'plain'</span></span><br><span class="line">        code = tableize_code(str.gsub(<span class="string">'&lt;'</span>,<span class="string">'&amp;lt;'</span>).gsub(<span class="string">'&gt;'</span>,<span class="string">'&amp;gt;'</span>))</span><br><span class="line">        <span class="string">"&lt;figure class='code'&gt;<span class="subst">#&#123;<span class="variable">@caption</span>&#125;</span><span class="subst">#&#123;code&#125;</span>&lt;/figure&gt;"</span></span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">if</span> <span class="variable">@lang</span>.<span class="keyword">include</span>? <span class="string">"-raw"</span></span><br><span class="line">          raw = <span class="string">"``` <span class="subst">#&#123;<span class="variable">@options</span>.sub(<span class="string">'-raw'</span>, <span class="string">''</span>)&#125;</span>\n"</span></span><br><span class="line">          raw += str</span><br><span class="line">          raw += <span class="string">"\n```\n"</span></span><br><span class="line">        <span class="keyword">elsif</span> !<span class="variable">@mark</span>.<span class="keyword">nil</span>?  <span class="comment">#if has mark argument</span></span><br><span class="line">          code = highlight(str, <span class="variable">@lang</span>, <span class="variable">@mark</span>)</span><br><span class="line">          <span class="string">"&lt;figure class='code'&gt;<span class="subst">#&#123;<span class="variable">@caption</span>&#125;</span><span class="subst">#&#123;code&#125;</span>&lt;/figure&gt;"</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">          code = highlight(str, <span class="variable">@lang</span>)</span><br><span class="line">          <span class="string">"&lt;figure class='code'&gt;<span class="subst">#&#123;<span class="variable">@caption</span>&#125;</span><span class="subst">#&#123;code&#125;</span>&lt;/figure&gt;"</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p><code>/plugins/pygments_code.rb</code> 内容</p>
+<figure class="highlight ruby"><figcaption><span>mark: 15, 39-42, 50-54, 60-75</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span> <span class="string">'pygments'</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">'fileutils'</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">'digest/md5'</span></span><br><span class="line"></span><br><span class="line"><span class="constant">PYGMENTS_CACHE_DIR</span> = <span class="constant">File</span>.expand_path(<span class="string">'../../.pygments-cache'</span>, __FILE_<span class="number">_</span>)</span><br><span class="line"><span class="constant">FileUtils</span>.mkdir_p(<span class="constant">PYGMENTS_CACHE_DIR</span>)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">module</span> <span class="title">HighlightCode</span></span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">highlight</span><span class="params">(str, lang, mark = <span class="keyword">nil</span>)</span></span></span><br><span class="line">    lang = <span class="string">'ruby'</span> <span class="keyword">if</span> lang == <span class="string">'ru'</span></span><br><span class="line">    lang = <span class="string">'objc'</span> <span class="keyword">if</span> lang == <span class="string">'m'</span></span><br><span class="line">    lang = <span class="string">'perl'</span> <span class="keyword">if</span> lang == <span class="string">'pl'</span></span><br><span class="line">    lang = <span class="string">'yaml'</span> <span class="keyword">if</span> lang == <span class="string">'yml'</span></span><br><span class="line">    str = pygments(str, lang).match(<span class="regexp">/&lt;pre&gt;(.+)&lt;\/pre&gt;/m</span>)[<span class="number">1</span>].to_s.gsub(<span class="regexp">/ *$/</span>, <span class="string">''</span>) <span class="comment">#strip out divs &lt;div class="highlight"&gt;</span></span><br><span class="line">    tableize_code(str, lang, mark)</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">pygments</span><span class="params">(code, lang)</span></span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">defined</span>?(<span class="constant">PYGMENTS_CACHE_DIR</span>)</span><br><span class="line">      path = <span class="constant">File</span>.join(<span class="constant">PYGMENTS_CACHE_DIR</span>, <span class="string">"<span class="subst">#&#123;lang&#125;</span>-<span class="subst">#&#123;<span class="constant">Digest::MD5</span>.hexdigest(code)&#125;</span>.html"</span>)</span><br><span class="line">      <span class="keyword">if</span> <span class="constant">File</span>.exist?(path)</span><br><span class="line">        highlighted_code = <span class="constant">File</span>.read(path)</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">          highlighted_code = <span class="constant">Pygments</span>.highlight(code, <span class="symbol">:lexer</span> =&gt; lang, <span class="symbol">:formatter</span> =&gt; <span class="string">'html'</span>, <span class="symbol">:options</span> =&gt; &#123;<span class="symbol">:encoding</span> =&gt; <span class="string">'utf-8'</span>, <span class="symbol">:startinline</span> =&gt; <span class="keyword">true</span>&#125;)</span><br><span class="line">        <span class="keyword">rescue</span> <span class="constant">MentosError</span></span><br><span class="line">          raise <span class="string">"Pygments can't parse unknown language: <span class="subst">#&#123;lang&#125;</span>."</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="constant">File</span>.open(path, <span class="string">'w'</span>) &#123;|f| f.print(highlighted_code) &#125;</span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      highlighted_code = <span class="constant">Pygments</span>.highlight(code, <span class="symbol">:lexer</span> =&gt; lang, <span class="symbol">:formatter</span> =&gt; <span class="string">'html'</span>, <span class="symbol">:options</span> =&gt; &#123;<span class="symbol">:encoding</span> =&gt; <span class="string">'utf-8'</span>, <span class="symbol">:startinline</span> =&gt; <span class="keyword">true</span>&#125;)</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    highlighted_code</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">tableize_code</span> <span class="params">(str, lang = <span class="string">''</span>, mark = <span class="keyword">nil</span>)</span></span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># get line indexes that need to highlight</span></span><br><span class="line">    lines = []</span><br><span class="line">    <span class="keyword">if</span> !mark.<span class="keyword">nil</span>?</span><br><span class="line">      lines = get_mark_index(mark)</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    table = <span class="string">'&lt;div class="highlight"&gt;&lt;table&gt;&lt;tr&gt;&lt;td class="gutter"&gt;&lt;pre class="line-numbers"&gt;'</span></span><br><span class="line">    code = <span class="string">''</span></span><br><span class="line">    str.lines.each_with_index <span class="keyword">do</span> |line,index|</span><br><span class="line">      table += <span class="string">"&lt;span class='line-number'&gt;<span class="subst">#&#123;index+<span class="number">1</span>&#125;</span>&lt;/span&gt;\n"</span></span><br><span class="line"></span><br><span class="line">      <span class="comment"># if the line needs to highlight then add a class name "highlight_line" to class attribute</span></span><br><span class="line">      <span class="keyword">if</span> lines[index+<span class="number">1</span>] == <span class="keyword">true</span></span><br><span class="line">        code += <span class="string">"&lt;span class='line highlight_line'&gt;<span class="subst">#&#123;line&#125;</span>&lt;/span&gt;"</span></span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">        code  += <span class="string">"&lt;span class='line'&gt;<span class="subst">#&#123;line&#125;</span>&lt;/span&gt;"</span></span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    table += <span class="string">"&lt;/pre&gt;&lt;/td&gt;&lt;td class='code'&gt;&lt;pre&gt;&lt;code class='<span class="subst">#&#123;lang&#125;</span>'&gt;<span class="subst">#&#123;code&#125;</span>&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;"</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># get the line numbers that need to highlight &amp; return the array of index</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">get_mark_index</span> <span class="params">(mark)</span></span></span><br><span class="line">    option = <span class="regexp">/[0-9\-]+/</span></span><br><span class="line">    indexes = mark.scan(option)</span><br><span class="line">    lines = []</span><br><span class="line"></span><br><span class="line">    indexes.each <span class="keyword">do</span> |index|</span><br><span class="line">      <span class="keyword">if</span> index =~ <span class="regexp">/([0-9]+)\-([0-9]+)/</span></span><br><span class="line">        start = <span class="variable">$1</span>.to_i</span><br><span class="line">        final = <span class="variable">$2</span>.to_i</span><br><span class="line">        (start..final).each &#123; |i| lines[i] = <span class="keyword">true</span> &#125;</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">        lines[index.to_i] = <span class="keyword">true</span></span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    lines</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p><code>/source/_includes/custom/footer.html</code> 内容</p>
+<figure class="highlight html"><figcaption><span>mark: 9-14</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">p</span>&gt;</span></span><br><span class="line">  Copyright &amp;copy; &#123;&#123; site.time | date: "%Y" &#125;&#125; - &#123;&#123; site.author &#125;&#125; -</span><br><span class="line">  <span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"credit"</span>&gt;</span>Powered by <span class="tag">&lt;<span class="title">a</span> <span class="attribute">href</span>=<span class="value">"http://octopress.org"</span>&gt;</span>Octopress<span class="tag">&lt;/<span class="title">a</span>&gt;</span><span class="tag">&lt;/<span class="title">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><br><span class="line">    <span class="keyword">var</span> _bdhmProtocol = ((<span class="string">"https:"</span> == <span class="built_in">document</span>.location.protocol) ? <span class="string">" https://"</span> : <span class="string">" http://"</span>);</span><br><span class="line">    <span class="built_in">document</span>.write(<span class="built_in">unescape</span>(<span class="string">"%3Cscript src='"</span> + _bdhmProtocol + <span class="string">"hm.baidu.com/h.js%3F1927408f733bc1f82c711c8aece7a832' type='text/javascript'%3E%3C/script%3E"</span>));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> highlight_lines = <span class="built_in">document</span>.getElementsByClassName(<span class="string">"highlight_line"</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; highlight_lines.length; i++) &#123;</span><br><span class="line">        highlight_lines[i].style.paddingRight = <span class="string">"2000px"</span>;</span><br><span class="line">        <span class="comment">// highlight_lines[i].style.width = "100%";</span></span><br><span class="line">        highlight_lines[i].style.backgroundColor = <span class="string">"rgba(80,80,80,0.5)"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span></span><br></pre></td></tr></table></figure></span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2014/12/19/ubuntu-14-dot-10-postfix-with-dovecot/" rel="next" title="Ubuntu 14.10 邮件服务器搭建：Postfix 和 dovecot ">
+                <i class="fa fa-chevron-left"></i> Ubuntu 14.10 邮件服务器搭建：Postfix 和 dovecot 
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/01/15/rails-deployment-on-nginx-with-passenger-mac/" rel="prev" title="在 Mac 上使用 Nginx + Passenger 部署 Rails">
+                在 Mac 上使用 Nginx + Passenger 部署 Rails <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2014/12/22/octopress-highlight-line-in-code-block/"
+           data-title="为 Octopress 中的代码块添加高亮行的功能" data-url="http://veracruz.github.io/2014/12/22/octopress-highlight-line-in-code-block/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/avatar.png" alt="Vez" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">Vez</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">爱折腾的人</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">19</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#确定格式"><span class="nav-number">1.</span> <span class="nav-text">确定格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#上代码"><span class="nav-number">2.</span> <span class="nav-text">上代码</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Vez</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"veracruz"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

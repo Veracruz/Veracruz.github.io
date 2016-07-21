@@ -1,0 +1,765 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+    <link href='//fonts.lug.ustc.edu.cn/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+  
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="RAC," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Code in Technicolor" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="闲话: 听说学 Haskell 可以打开新世界的大门
+
+刚刚发现 ReactiveCocoa 的时候，看到相关的术语 signal、subscriber 之类的，不明觉厉。再加上 FRP - Functional Reactive Programming，我似乎看到了新世界的大门。
+作为初见，希望尽可能地提取关键概念来理解这个非常热门但是有些难懂的框架，减少打开新世界大门的阻力。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ReactiveCocoa 初见">
+<meta property="og:url" content="http://veracruz.github.io/2015/09/27/RFP-RAC-Glance/index.html">
+<meta property="og:site_name" content="Code in Technicolor">
+<meta property="og:description" content="闲话: 听说学 Haskell 可以打开新世界的大门
+
+刚刚发现 ReactiveCocoa 的时候，看到相关的术语 signal、subscriber 之类的，不明觉厉。再加上 FRP - Functional Reactive Programming，我似乎看到了新世界的大门。
+作为初见，希望尽可能地提取关键概念来理解这个非常热门但是有些难懂的框架，减少打开新世界大门的阻力。">
+<meta property="og:updated_time" content="2015-11-19T01:28:59.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ReactiveCocoa 初见">
+<meta name="twitter:description" content="闲话: 听说学 Haskell 可以打开新世界的大门
+
+刚刚发现 ReactiveCocoa 的时候，看到相关的术语 signal、subscriber 之类的，不明觉厉。再加上 FRP - Functional Reactive Programming，我似乎看到了新世界的大门。
+作为初见，希望尽可能地提取关键概念来理解这个非常热门但是有些难懂的框架，减少打开新世界大门的阻力。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> ReactiveCocoa 初见 | Code in Technicolor </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?1927408f733bc1f82c711c8aece7a832";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Code in Technicolor</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Concentrate on iOS & Web</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                ReactiveCocoa 初见
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            发表于
+            <time itemprop="dateCreated" datetime="2015-09-27T03:39:49+08:00" content="2015-09-27">
+              2015-09-27
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分类于
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/09/27/RFP-RAC-Glance/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/09/27/RFP-RAC-Glance/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><blockquote class="blockquote-center"><br><strong>闲话</strong>: 听说学 Haskell 可以打开新世界的大门<br></blockquote>
+
+<p>刚刚发现 <em><a href="https://github.com/ReactiveCocoa/ReactiveCocoa" target="_blank" rel="external">ReactiveCocoa</a></em> 的时候，看到相关的术语 <em>signal</em>、<em>subscriber</em> 之类的，不明觉厉。再加上 <em>FRP - Functional Reactive Programming</em>，我似乎看到了新世界的大门。</p>
+<p>作为初见，希望尽可能地提取关键概念来理解这个非常热门但是有些难懂的框架，减少打开新世界大门的阻力。</p>
+<p><br><br></p>
+<a id="more"></a>
+<h2 id="编程范式_Programming_Paradigm">编程范式 Programming Paradigm</h2><p>在 <em>Wikipedia</em> 上搜索这个关键词的话，就可以看到在这个词条右边列出了几十个编程范式，领略一下前人的脑洞。<br><br>(￣ε(#￣)☆╰╮o(￣皿￣///)</p>
+<p>咳咳，对于 <em><a href="https://github.com/ReactiveCocoa/ReactiveCocoa" target="_blank" rel="external">ReactiveCocoa</a></em> 这个框架最先应该了解的是 <em><a href="https://en.wikipedia.org/wiki/Functional_programming" target="_blank" rel="external">Functional Programming</a></em> 和 <em><a href="https://en.wikipedia.org/wiki/Reactive_programming" target="_blank" rel="external">Reactive Programming</a></em></p>
+<h3 id="函数式编程_Functional_Programming">函数式编程 Functional Programming</h3><p>参考 <em>Wikipedia</em> 我的理解是：</p>
+<ul>
+<li>函数可以作为参数传递</li>
+<li>组合各种函数来实现所需</li>
+</ul>
+<p>还有纯函数式编程语言里没有变量之类的暂时不去深究。这个范式其实在现代编程语言中大多都支持。</p>
+<h3 id="响应式编程_Reactive_Programming">响应式编程 Reactive Programming</h3><p>重点就一个，数据可以随着事件动态变化，就如同 Wiki 中所说的，表达式的结果会因为表达式中的变量改变自动更新。</p>
+<p>那么上面两种范式结合之后是什么？</p>
+<h3 id="函数响应式编程_Functional_Reactive_Programming">函数响应式编程 Functional Reactive Programming</h3><p>重点还是在响应，通过组合函数可以实现复杂的响应过程。</p>
+<p>希望详细了解，<a href="http://www.infoq.com/cn/articles/functional-reactive-programming/" target="_blank" rel="external">这里</a> 有一篇很好的关于 <em>FRP</em> 的文章</p>
+<p><br></p>
+<h2 id="MVC_vs_MVVM">MVC vs MVVM</h2><p>iOS 开发过程中会遇到在一个 View Controller 的文件里，有着几百上千行的代码。View Controller 总是承担着过多的任务，这里 MVVM 的出现就是为了剥离 View Controller 中过多的代码，objc.io 的第一个 issue 就是一篇分离 View Controller 和 Table View 的很好的文章，<a href="https://www.objc.io/issues/1-view-controllers/" target="_blank" rel="external">英文版</a>，<a href="http://www.objccn.io/issue-1/" target="_blank" rel="external">中文版</a>。</p>
+<p>另外 <a href="http://www.sprynthesis.com/2014/12/06/reactivecocoa-mvvm-introduction/" target="_blank" rel="external">这里</a> 有一篇很好的用 ReactiveCocoa 实现 MVVM 的文章，重点是轻量化 ViewController，组合两种架构，不是完全替换 MVC。</p>
+<p><br></p>
+<h2 id="Reactive_Cocoa">Reactive Cocoa</h2><p>终于进入正题。这个框架，就是吸收了如同 <em>Haskell</em> 这类函数式语言的思想，从微软的 Rx 演化来的。利用它就可以很好的实现 MVVM 的架构，防止臃肿杂乱的 View Controller。</p>
+<p>使用它会进入完全不同的另一种编程思维，用这另一种思维去看以前遇到的问题，就看到新世界的大门了<br><br>(๑•̀ㅂ•́)و✧</p>
+<p>RAYWENDERLICH 上的 <a href="http://www.raywenderlich.com/62699/reactivecocoa-tutorial-pt1" target="_blank" rel="external">一篇文章</a> 很详细的介绍了框架基本的用法。不过无论是这篇还是上一节的那篇文章，篇幅都很长，根据本文的初衷，下面总结一下。</p>
+<h3 id="信号_Signal">信号 Signal</h3><p>这个就是最核心的概念，操作都基于对信号的各种处理上。信号就是用来 <strong>承载</strong> 数据的，跟满天飞来飞去的无线电波一样。我们可以对信号做各种处理，像是监听、过滤等等，在 Reactive Cocoa 中的信号非常类似于人们自然理解的信号。</p>
+<h3 id="操作符_Operator">操作符 Operator</h3><p>处理信号使用操作符，代码上其实就是一个参数是 block 的函数。block 里面就是怎么处理信号。框架里面提供了很多操作符，参看 github 上的 <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/tree/master/Documentation" target="_blank" rel="external">文档</a>。</p>
+<p><br></p>
+<h2 id="应用内切换语言">应用内切换语言</h2><p>如果已经看过之前提到的两篇教程文章，相比那接下来的示例会更简单。之前两篇文章都是用了搜索 Twitter 的推文来展示框架的用法，鉴于你懂得的原因，和新浪微博的接口复杂一些，搜索功能也很限制，所以我用了这个想到就会觉得实现起来会很麻烦的功能。</p>
+<blockquote>
+<p>产品的国际化就像牙线：所有人都知道他们应该使用，却可能都不去用。 – <a href="http://nshipster.cn/nslocale/" target="_blank" rel="external">NSHipster</a></p>
+</blockquote>
+<p>这个例子的完整代码可以在 github 上找到 <a href="https://github.com/Veracruz/RAC-International-Example" target="_blank" rel="external">RAC-International-Example</a></p>
+<p>首先我们先看一下成果</p>
+<image src="/images/2015_9/RAC-International-Example.gif" width="320"></image>
+
+<p>最终在我们需要国际化的地方的代码长这样</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@weakify(<span class="keyword">self</span>);</span><br><span class="line">[LanguageChangedSignal subscribeNext:^(<span class="built_in">NSString</span> *languageCode) &#123;</span><br><span class="line">    @strongify(<span class="keyword">self</span>);</span><br><span class="line">    <span class="keyword">self</span><span class="variable">.languageButton</span><span class="variable">.title</span> = LocalizedString(<span class="string">@"Language"</span>);</span><br><span class="line">    <span class="keyword">self</span><span class="variable">.titleLabel</span><span class="variable">.text</span> = LocalizedString(<span class="string">@"Hello World"</span>);</span><br><span class="line">    [<span class="keyword">self</span><span class="variable">.button</span> setTitle:LocalizedString(<span class="string">@"Button"</span>) forState:<span class="built_in">UIControlStateNormal</span>];</span><br><span class="line">    <span class="keyword">self</span><span class="variable">.label</span><span class="variable">.text</span> = LocalizedString(<span class="string">@"Label"</span>);</span><br><span class="line">    <span class="keyword">self</span><span class="variable">.textView</span><span class="variable">.text</span> = LocalizedString(<span class="string">@"It's a pretty day."</span>);</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+<p>在任何需要国际化的地方只要这么写就可以，其实国际化就是一劳永逸的工作，习惯之后其实非常简单。</p>
+<p><code>@weakify(self)</code> 和 <code>@strongify(self)</code> 是用来方便地解决循环引用的，需要另外包含头文件 <code>#import &quot;EXTScope.h&quot;</code>。</p>
+<p><code>subscribeNext:</code> 方法是订阅信号，会在信号发送 <code>sendNext</code> 时执行 block 内的代码，这里就是刷新 UI</p>
+<p>下面是如何发送信号</p>
+<h3 id="创建语言管理(视图模型)类">创建语言管理(视图模型)类</h3><p>我们整个的信号流程很简单：修改语言(变化产生数据流) –&gt; 加载语言文件 –&gt; 刷新 UI</p>
+<p>首先呢，不得不放弃 <code>NSLocalizedString</code> 的方法，我还没找到可以直接修改地区的方法。</p>
+<p>创建一个语言管理的单例类</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@class</span> <span class="title">RACSignal</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">LanguageManager</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line">+ (LanguageManager *)shareInstance;</span><br><span class="line"></span><br><span class="line">- (RACSignal *)languageChangedSignal;</span><br><span class="line">- (<span class="built_in">NSString</span> *)localizedString:(<span class="built_in">NSString</span> *)key;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSArray</span> *)languages;</span><br><span class="line">- (<span class="keyword">void</span>)changeLanguageTo:(<span class="built_in">NSString</span> *)language;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#define LanguageViewModel [LanguageManager shareInstance]</span></span><br><span class="line"><span class="preprocessor">#define LocalizedString(key) [LanguageViewModel localizedString:(key)]</span></span><br><span class="line"><span class="preprocessor">#define LanguageChangedSignal [LanguageViewModel languageChangedSignal]</span></span><br></pre></td></tr></table></figure>
+<p><code>languageChangedSignal</code> 方法返回了一个语言变化的信号，用来给全局需要变化的地方订阅用<br><br><code>localizedString:</code> 方法获取当前语言的字符串<br><br><code>languages</code> 方法返回所有支持的语言列表，在语言选择的 Table View 里使用<br><br><code>changeLanguageTo:</code> 方法用来变更当前语言<br><br>另外下面添加了几个使代码整洁的宏。</p>
+<p>我们只需要关注 <code>languageChangedSignal</code> 的实现</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">- (RACSignal *)languageChangedSignal &#123;</span><br><span class="line">    <span class="keyword">if</span> (!_languageChangedSignal) &#123;</span><br><span class="line">        @weakify(<span class="keyword">self</span>);</span><br><span class="line">        <span class="keyword">self</span><span class="variable">.languageChangedSignal</span> = [RACObserve(<span class="keyword">self</span>, currentLanguage) doNext:^(<span class="built_in">NSString</span> *currentLanguage) &#123;</span><br><span class="line">            @strongify(<span class="keyword">self</span>);</span><br><span class="line">            [[<span class="built_in">NSUserDefaults</span> standardUserDefaults] setObject:currentLanguage forKey:<span class="string">@"currentLanguage"</span>];</span><br><span class="line">            <span class="built_in">NSBundle</span> *localizeBundle = [<span class="built_in">NSBundle</span> bundleWithPath:[[<span class="built_in">NSBundle</span> mainBundle] pathForResource:<span class="keyword">self</span><span class="variable">.currentLanguage</span> ofType:<span class="string">@"lproj"</span>]];</span><br><span class="line">            <span class="keyword">self</span><span class="variable">.stringsFile</span> = [[<span class="built_in">NSDictionary</span> alloc] initWithContentsOfFile:[localizeBundle pathForResource:LocalizationFile ofType:<span class="string">@"strings"</span>]];</span><br><span class="line">            <span class="keyword">if</span> (!<span class="keyword">self</span><span class="variable">.stringsFile</span>) &#123;</span><br><span class="line">                <span class="built_in">NSBundle</span> *baseBunble = [<span class="built_in">NSBundle</span> bundleWithPath:[[<span class="built_in">NSBundle</span> mainBundle] pathForResource:<span class="string">@"Base"</span> ofType:<span class="string">@"lproj"</span>]];</span><br><span class="line">                <span class="keyword">self</span><span class="variable">.stringsFile</span> = [[<span class="built_in">NSDictionary</span> alloc] initWithContentsOfFile:[baseBunble pathForResource:LocalizationFile ofType:<span class="string">@"strings"</span>]];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> _languageChangedSignal;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这段代码看起来比较乱，只需要关注 <code>RACObserve</code> 这个框架提供的宏和 <code>doNext:</code> 方法。</p>
+<p><code>RACObserve(self, currentLanguage)</code> 就是创建了 <code>currentLanguage</code> 这个属性的变化的信号。<br><br><code>doNext:^(NSString *currentLanguage) {...}</code> 这个方法是在更改 UI 之前插入需要执行的动作。block 中略长的内容是根据语言代码获取对应的 strings 文件。</p>
+<p>Reactive Cocoa 是基于 KVO 的，所以要注意观察的属性是不是支持 KVO。在这里就是如果你使用下划线的熟悉去修改，就不会发生任何你想要的事，需要使用 setter 的方式去修改(<code>self.currentLanguage</code>)。</p>
+<h3 id="接下来">接下来</h3><p>其实没有接下来了，没错，就是这么简单，核心部分的代码就是这样。</p>
+<p>其他细节实现可以 clone 或下载本示例项目 <a href="https://github.com/Veracruz/RAC-International-Example" target="_blank" rel="external">RAC-International-Example</a></p>
+<p><br></p>
+<h2 id="新世界的大门">新世界的大门</h2><p>新世界的大门打开了，使用 Reactive Cocoa 确实让代码变得很不同，虽然很多陌生的概念，但是当你熟悉和深入了解之后，他就是进入新世界的钥匙。</p>
+<p><br></p>
+<h2 id="附录">附录</h2><ol>
+<li><a href="https://github.com/ReactiveCocoa/ReactiveCocoa" target="_blank" rel="external">Github Repo - ReactiveCocoa</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Functional_programming" target="_blank" rel="external">Wikipedia - Functional Programming</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Reactive_programming" target="_blank" rel="external">Wikipedia - Reactive Programming</a></li>
+<li><a href="http://www.infoq.com/cn/articles/functional-reactive-programming/" target="_blank" rel="external">函数式反应型编程(FRP) —— 实时互动应用开发的新思路</a></li>
+<li><a href="https://www.objc.io/issues/1-view-controllers/" target="_blank" rel="external">objc.io - Lighter View Controllers</a></li>
+<li><a href="http://www.sprynthesis.com/2014/12/06/reactivecocoa-mvvm-introduction/" target="_blank" rel="external">Sprynthesis - ReactiveCocoa and MVVM, an Introduction</a></li>
+<li><a href="http://www.raywenderlich.com/62699/reactivecocoa-tutorial-pt1" target="_blank" rel="external">RayWenderlich ReactiveCocoa Tutorial – The Definitive Introduction</a></li>
+<li><a href="https://github.com/ReactiveCocoa/ReactiveCocoa/tree/master/Documentation" target="_blank" rel="external">Github - ReactiveCocoa Documentation</a></li>
+<li><a href="http://nshipster.cn/nslocale/" target="_blank" rel="external">NSHipster - NSLocale</a></li>
+<li><a href="https://github.com/Veracruz/RAC-International-Example" target="_blank" rel="external">示例代码 - RAC-International-Example</a></li>
+</ol>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/RAC/" rel="tag">#RAC</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/09/24/one-word-api-1/" rel="next" title="One Word API - (1)">
+                <i class="fa fa-chevron-left"></i> One Word API - (1)
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2015/09/27/RFP-RAC-Glance/"
+           data-title="ReactiveCocoa 初见" data-url="http://veracruz.github.io/2015/09/27/RFP-RAC-Glance/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/avatar.png" alt="Vez" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">Vez</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">爱折腾的人</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">19</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#编程范式_Programming_Paradigm"><span class="nav-number">1.</span> <span class="nav-text">编程范式 Programming Paradigm</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#函数式编程_Functional_Programming"><span class="nav-number">1.1.</span> <span class="nav-text">函数式编程 Functional Programming</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#响应式编程_Reactive_Programming"><span class="nav-number">1.2.</span> <span class="nav-text">响应式编程 Reactive Programming</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数响应式编程_Functional_Reactive_Programming"><span class="nav-number">1.3.</span> <span class="nav-text">函数响应式编程 Functional Reactive Programming</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MVC_vs_MVVM"><span class="nav-number">2.</span> <span class="nav-text">MVC vs MVVM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reactive_Cocoa"><span class="nav-number">3.</span> <span class="nav-text">Reactive Cocoa</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#信号_Signal"><span class="nav-number">3.1.</span> <span class="nav-text">信号 Signal</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作符_Operator"><span class="nav-number">3.2.</span> <span class="nav-text">操作符 Operator</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应用内切换语言"><span class="nav-number">4.</span> <span class="nav-text">应用内切换语言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建语言管理(视图模型)类"><span class="nav-number">4.1.</span> <span class="nav-text">创建语言管理(视图模型)类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接下来"><span class="nav-number">4.2.</span> <span class="nav-text">接下来</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#新世界的大门"><span class="nav-number">5.</span> <span class="nav-text">新世界的大门</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#附录"><span class="nav-number">6.</span> <span class="nav-text">附录</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Vez</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"veracruz"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

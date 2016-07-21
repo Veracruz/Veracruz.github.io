@@ -1,0 +1,992 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title><![CDATA[Code in Technicolor]]></title>
+  <subtitle><![CDATA[Concentrate on iOS & Web]]></subtitle>
+  <link href="/atom.xml" rel="self"/>
+  <link href="http://veracruz.github.io/"/>
+  <updated>2015-11-19T01:28:59.000Z</updated>
+  <id>http://veracruz.github.io/</id>
+  
+  <author>
+    <name><![CDATA[Vez]]></name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[ReactiveCocoa 初见]]></title>
+    <link href="http://veracruz.github.io/2015/09/27/RFP-RAC-Glance/"/>
+    <id>http://veracruz.github.io/2015/09/27/RFP-RAC-Glance/</id>
+    <published>2015-09-26T19:39:49.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<blockquote class="blockquote-center"><br><strong>闲话</strong>: 听说学 Haskell 可以打开新世界的大门<br></blockquote>
+
+<p>刚刚发现 <em><a href="https://github.com/ReactiveCocoa/ReactiveCocoa" target="_blank" rel="external">ReactiveCocoa</a></em> 的时候，看到相关的术语 <em>signal</em>、<em>subscriber</em> 之类的，不明觉厉。再加上 <em>FRP - Functional Reactive Programming</em>，我似乎看到了新世界的大门。</p>
+<p>作为初见，希望尽可能地提取关键概念来理解这个非常热门但是有些难懂的框架，减少打开新世界大门的阻力。</p>
+<p><br><br></p>
+<a id="more"></a>
+<h2 id="编程范式_Programming_Paradigm">编程范式 Programming Paradigm</h2><p>在 <em>Wikipedia</em> 上搜索这个关键词的话，就可以看到在这个词条右边列出了几十个编程范式，领略一下前人的脑洞。<br><br>(￣ε(#￣)☆╰╮o(￣皿￣///)</p>
+<p>咳咳，对于 <em><a href="https://github.com/ReactiveCocoa/ReactiveCocoa" target="_blank" rel="external">ReactiveCocoa</a></em> 这个框架最先应该了解的是 <em><a href="https://en.wikipedia.org/wiki/Functional_programming" target="_blank" rel="external">Functional Programming</a></em> 和 <em><a href="https://en.wikipedia.org/wiki/Reactive_programming" target="_blank" rel="external">Reactive Programming</a></em></p>
+<h3 id="函数式编程_Functional_Programming">函数式编程 Functional Programming</h3><p>参考 <em>Wikipedia</em> 我的理解是：</p>
+<ul>
+<li>函数可以作为参数传递</li>
+<li>组合各种函数来实现所需</li>
+</ul>
+<p>还有纯函数式编程语言里没有变量之类的暂时不去深究。这个范式其实在现代编程语言中大多都支持。</p>
+<h3 id="响应式编程_Reactive_Programming">响应式编程 Reactive Programming</h3><p>重点就一个，数据可以随着事件动态变化，就如同 Wiki 中所说的，表达式的结果会因为表达式中的变量改变自动更新。</p>
+<p>那么上面两种范式结合之后是什么？</p>
+<h3 id="函数响应式编程_Functional_Reactive_Programming">函数响应式编程 Functional Reactive Programming</h3><p>重点还是在响应，通过组合函数可以实现复杂的响应过程。</p>
+<p>希望详细了解，<a href="http://www.infoq.com/cn/articles/functional-reactive-programming/" target="_blank" rel="external">这里</a> 有一篇很好的关于 <em>FRP</em> 的文章</p>
+<p><br></p>
+<h2 id="MVC_vs_MVVM">MVC vs MVVM</h2><p>iOS 开发过程中会遇到在一个 View Controller 的文件里，有着几百上千行的代码。View Controller 总是承担着过多的任务，这里 MVVM 的出现就是为了剥离 View Controller 中过多的代码，objc.io 的第一个 issue 就是一篇分离 View Controller 和 Table View 的很好的文章，<a href="https://www.objc.io/issues/1-view-controllers/" target="_blank" rel="external">英文版</a>，<a href="http://www.objccn.io/issue-1/" target="_blank" rel="external">中文版</a>。</p>
+<p>另外 <a href="http://www.sprynthesis.com/2014/12/06/reactivecocoa-mvvm-introduction/" target="_blank" rel="external">这里</a> 有一篇很好的用 ReactiveCocoa 实现 MVVM 的文章，重点是轻量化 ViewController，组合两种架构，不是完全替换 MVC。</p>
+<p><br></p>
+<h2 id="Reactive_Cocoa">Reactive Cocoa</h2><p>终于进入正题。这个框架，就是吸收了如同 <em>Haskell</em> 这类函数式语言的思想，从微软的 Rx 演化来的。利用它就可以很好的实现 MVVM 的架构，防止臃肿杂乱的 View Controller。</p>
+<p>使用它会进入完全不同的另一种编程思维，用这另一种思维去看以前遇到的问题，就看到新世界的大门了<br><br>(๑•̀ㅂ•́)و✧</p>
+<p>RAYWENDERLICH 上的 <a href="http://www.raywenderlich.com/62699/reactivecocoa-tutorial-pt1" target="_blank" rel="external">一篇文章</a> 很详细的介绍了框架基本的用法。不过无论是这篇还是上一节的那篇文章，篇幅都很长，根据本文的初衷，下面总结一下。</p>
+<h3 id="信号_Signal">信号 Signal</h3><p>这个就是最核心的概念，操作都基于对信号的各种处理上。信号就是用来 <strong>承载</strong> 数据的，跟满天飞来飞去的无线电波一样。我们可以对信号做各种处理，像是监听、过滤等等，在 Reactive Cocoa 中的信号非常类似于人们自然理解的信号。</p>
+<h3 id="操作符_Operator">操作符 Operator</h3><p>处理信号使用操作符，代码上其实就是一个参数是 block 的函数。block 里面就是怎么处理信号。框架里面提供了很多操作符，参看 github 上的 <a href="https://github.com/ReactiveCocoa/ReactiveCocoa/tree/master/Documentation" target="_blank" rel="external">文档</a>。</p>
+<p><br></p>
+<h2 id="应用内切换语言">应用内切换语言</h2><p>如果已经看过之前提到的两篇教程文章，相比那接下来的示例会更简单。之前两篇文章都是用了搜索 Twitter 的推文来展示框架的用法，鉴于你懂得的原因，和新浪微博的接口复杂一些，搜索功能也很限制，所以我用了这个想到就会觉得实现起来会很麻烦的功能。</p>
+<blockquote>
+<p>产品的国际化就像牙线：所有人都知道他们应该使用，却可能都不去用。 – <a href="http://nshipster.cn/nslocale/" target="_blank" rel="external">NSHipster</a></p>
+</blockquote>
+<p>这个例子的完整代码可以在 github 上找到 <a href="https://github.com/Veracruz/RAC-International-Example" target="_blank" rel="external">RAC-International-Example</a></p>
+<p>首先我们先看一下成果</p>
+<image src="/images/2015_9/RAC-International-Example.gif" width="320"></image>
+
+<p>最终在我们需要国际化的地方的代码长这样</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@weakify(<span class="keyword">self</span>);</span><br><span class="line">[LanguageChangedSignal subscribeNext:^(<span class="built_in">NSString</span> *languageCode) &#123;</span><br><span class="line">    @strongify(<span class="keyword">self</span>);</span><br><span class="line">    <span class="keyword">self</span><span class="variable">.languageButton</span><span class="variable">.title</span> = LocalizedString(<span class="string">@"Language"</span>);</span><br><span class="line">    <span class="keyword">self</span><span class="variable">.titleLabel</span><span class="variable">.text</span> = LocalizedString(<span class="string">@"Hello World"</span>);</span><br><span class="line">    [<span class="keyword">self</span><span class="variable">.button</span> setTitle:LocalizedString(<span class="string">@"Button"</span>) forState:<span class="built_in">UIControlStateNormal</span>];</span><br><span class="line">    <span class="keyword">self</span><span class="variable">.label</span><span class="variable">.text</span> = LocalizedString(<span class="string">@"Label"</span>);</span><br><span class="line">    <span class="keyword">self</span><span class="variable">.textView</span><span class="variable">.text</span> = LocalizedString(<span class="string">@"It's a pretty day."</span>);</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+<p>在任何需要国际化的地方只要这么写就可以，其实国际化就是一劳永逸的工作，习惯之后其实非常简单。</p>
+<p><code>@weakify(self)</code> 和 <code>@strongify(self)</code> 是用来方便地解决循环引用的，需要另外包含头文件 <code>#import &quot;EXTScope.h&quot;</code>。</p>
+<p><code>subscribeNext:</code> 方法是订阅信号，会在信号发送 <code>sendNext</code> 时执行 block 内的代码，这里就是刷新 UI</p>
+<p>下面是如何发送信号</p>
+<h3 id="创建语言管理(视图模型)类">创建语言管理(视图模型)类</h3><p>我们整个的信号流程很简单：修改语言(变化产生数据流) –&gt; 加载语言文件 –&gt; 刷新 UI</p>
+<p>首先呢，不得不放弃 <code>NSLocalizedString</code> 的方法，我还没找到可以直接修改地区的方法。</p>
+<p>创建一个语言管理的单例类</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@class</span> <span class="title">RACSignal</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">LanguageManager</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line">+ (LanguageManager *)shareInstance;</span><br><span class="line"></span><br><span class="line">- (RACSignal *)languageChangedSignal;</span><br><span class="line">- (<span class="built_in">NSString</span> *)localizedString:(<span class="built_in">NSString</span> *)key;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSArray</span> *)languages;</span><br><span class="line">- (<span class="keyword">void</span>)changeLanguageTo:(<span class="built_in">NSString</span> *)language;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#define LanguageViewModel [LanguageManager shareInstance]</span></span><br><span class="line"><span class="preprocessor">#define LocalizedString(key) [LanguageViewModel localizedString:(key)]</span></span><br><span class="line"><span class="preprocessor">#define LanguageChangedSignal [LanguageViewModel languageChangedSignal]</span></span><br></pre></td></tr></table></figure>
+<p><code>languageChangedSignal</code> 方法返回了一个语言变化的信号，用来给全局需要变化的地方订阅用<br><br><code>localizedString:</code> 方法获取当前语言的字符串<br><br><code>languages</code> 方法返回所有支持的语言列表，在语言选择的 Table View 里使用<br><br><code>changeLanguageTo:</code> 方法用来变更当前语言<br><br>另外下面添加了几个使代码整洁的宏。</p>
+<p>我们只需要关注 <code>languageChangedSignal</code> 的实现</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">- (RACSignal *)languageChangedSignal &#123;</span><br><span class="line">    <span class="keyword">if</span> (!_languageChangedSignal) &#123;</span><br><span class="line">        @weakify(<span class="keyword">self</span>);</span><br><span class="line">        <span class="keyword">self</span><span class="variable">.languageChangedSignal</span> = [RACObserve(<span class="keyword">self</span>, currentLanguage) doNext:^(<span class="built_in">NSString</span> *currentLanguage) &#123;</span><br><span class="line">            @strongify(<span class="keyword">self</span>);</span><br><span class="line">            [[<span class="built_in">NSUserDefaults</span> standardUserDefaults] setObject:currentLanguage forKey:<span class="string">@"currentLanguage"</span>];</span><br><span class="line">            <span class="built_in">NSBundle</span> *localizeBundle = [<span class="built_in">NSBundle</span> bundleWithPath:[[<span class="built_in">NSBundle</span> mainBundle] pathForResource:<span class="keyword">self</span><span class="variable">.currentLanguage</span> ofType:<span class="string">@"lproj"</span>]];</span><br><span class="line">            <span class="keyword">self</span><span class="variable">.stringsFile</span> = [[<span class="built_in">NSDictionary</span> alloc] initWithContentsOfFile:[localizeBundle pathForResource:LocalizationFile ofType:<span class="string">@"strings"</span>]];</span><br><span class="line">            <span class="keyword">if</span> (!<span class="keyword">self</span><span class="variable">.stringsFile</span>) &#123;</span><br><span class="line">                <span class="built_in">NSBundle</span> *baseBunble = [<span class="built_in">NSBundle</span> bundleWithPath:[[<span class="built_in">NSBundle</span> mainBundle] pathForResource:<span class="string">@"Base"</span> ofType:<span class="string">@"lproj"</span>]];</span><br><span class="line">                <span class="keyword">self</span><span class="variable">.stringsFile</span> = [[<span class="built_in">NSDictionary</span> alloc] initWithContentsOfFile:[baseBunble pathForResource:LocalizationFile ofType:<span class="string">@"strings"</span>]];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> _languageChangedSignal;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这段代码看起来比较乱，只需要关注 <code>RACObserve</code> 这个框架提供的宏和 <code>doNext:</code> 方法。</p>
+<p><code>RACObserve(self, currentLanguage)</code> 就是创建了 <code>currentLanguage</code> 这个属性的变化的信号。<br><br><code>doNext:^(NSString *currentLanguage) {...}</code> 这个方法是在更改 UI 之前插入需要执行的动作。block 中略长的内容是根据语言代码获取对应的 strings 文件。</p>
+<p>Reactive Cocoa 是基于 KVO 的，所以要注意观察的属性是不是支持 KVO。在这里就是如果你使用下划线的熟悉去修改，就不会发生任何你想要的事，需要使用 setter 的方式去修改(<code>self.currentLanguage</code>)。</p>
+<h3 id="接下来">接下来</h3><p>其实没有接下来了，没错，就是这么简单，核心部分的代码就是这样。</p>
+<p>其他细节实现可以 clone 或下载本示例项目 <a href="https://github.com/Veracruz/RAC-International-Example" target="_blank" rel="external">RAC-International-Example</a></p>
+<p><br></p>
+<h2 id="新世界的大门">新世界的大门</h2><p>新世界的大门打开了，使用 Reactive Cocoa 确实让代码变得很不同，虽然很多陌生的概念，但是当你熟悉和深入了解之后，他就是进入新世界的钥匙。</p>
+<p><br></p>
+<h2 id="附录">附录</h2><ol>
+<li><a href="https://github.com/ReactiveCocoa/ReactiveCocoa" target="_blank" rel="external">Github Repo - ReactiveCocoa</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Functional_programming" target="_blank" rel="external">Wikipedia - Functional Programming</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Reactive_programming" target="_blank" rel="external">Wikipedia - Reactive Programming</a></li>
+<li><a href="http://www.infoq.com/cn/articles/functional-reactive-programming/" target="_blank" rel="external">函数式反应型编程(FRP) —— 实时互动应用开发的新思路</a></li>
+<li><a href="https://www.objc.io/issues/1-view-controllers/" target="_blank" rel="external">objc.io - Lighter View Controllers</a></li>
+<li><a href="http://www.sprynthesis.com/2014/12/06/reactivecocoa-mvvm-introduction/" target="_blank" rel="external">Sprynthesis - ReactiveCocoa and MVVM, an Introduction</a></li>
+<li><a href="http://www.raywenderlich.com/62699/reactivecocoa-tutorial-pt1" target="_blank" rel="external">RayWenderlich ReactiveCocoa Tutorial – The Definitive Introduction</a></li>
+<li><a href="https://github.com/ReactiveCocoa/ReactiveCocoa/tree/master/Documentation" target="_blank" rel="external">Github - ReactiveCocoa Documentation</a></li>
+<li><a href="http://nshipster.cn/nslocale/" target="_blank" rel="external">NSHipster - NSLocale</a></li>
+<li><a href="https://github.com/Veracruz/RAC-International-Example" target="_blank" rel="external">示例代码 - RAC-International-Example</a></li>
+</ol>
+]]></content>
+    <summary type="html">
+    <![CDATA[<blockquote class="blockquote-center"><br><strong>闲话</strong>: 听说学 Haskell 可以打开新世界的大门<br></blockquote>
+
+<p>刚刚发现 <em><a href="https://github.com/ReactiveCocoa/ReactiveCocoa">ReactiveCocoa</a></em> 的时候，看到相关的术语 <em>signal</em>、<em>subscriber</em> 之类的，不明觉厉。再加上 <em>FRP - Functional Reactive Programming</em>，我似乎看到了新世界的大门。</p>
+<p>作为初见，希望尽可能地提取关键概念来理解这个非常热门但是有些难懂的框架，减少打开新世界大门的阻力。</p>
+<p><br /><br /></p>]]>
+    
+    </summary>
+    
+      <category term="RAC" scheme="http://veracruz.github.io/tags/RAC/"/>
+    
+      <category term="iOS" scheme="http://veracruz.github.io/categories/iOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[One Word API - (1)]]></title>
+    <link href="http://veracruz.github.io/2015/09/24/one-word-api-1/"/>
+    <id>http://veracruz.github.io/2015/09/24/one-word-api-1/</id>
+    <published>2015-09-23T21:43:08.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p>有一些不是很常用的 API 看到之后可能根本看不出来是干什么的，或者看过文档之后很快就忘记了，又或者其实根本不知道文档在说什么(¦3[▓▓] 。</p>
+<p>本文仅以大概一句话来说明API是做什么用的，在考虑如何实现一个功能时可以想起来需要用到的 API</p>
+<p>本篇 API 收集自 <a href="http://nshipster.com" target="_blank" rel="external">NSHipster</a></p>
+<a id="more"></a>
+<p><br><br></p>
+<h2 id="UIKeyCommand"><code>UIKeyCommand</code></h2><p>提供 iPad 上的键盘快捷键的实现，并且可以显示快捷键列表在屏幕上。</p>
+<h2 id="NSIndexSet"><code>NSIndexSet</code></h2><p>可以理解为存储 index 的 set，它是有序的无符号整数集合，例如数组的 index，它的功能不仅仅限于此，请打开脑洞。</p>
+<h2 id="NSCache"><code>NSCache</code></h2><p>基本上相当于一个 <code>NSMutableDictionary</code> ，但是它会在需要的时候自动删除对象来释放内存，同它的名字一样 缓存。</p>
+<h2 id="NSSort​Descriptor"><code>NSSort​Descriptor</code></h2><p>基本上它可以让你一行完成常用的排序的需求。<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> numbers: <span class="type">NSArray</span> = [<span class="number">2</span>, <span class="number">1</span>, <span class="number">4</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">9</span>, <span class="number">0</span>, <span class="number">7</span> ,<span class="number">8</span>]</span><br><span class="line">numbers.sortedArrayUsingDescriptors([<span class="type">NSSortDescriptor</span>(key: <span class="string">""</span>, ascending: <span class="literal">true</span>)])</span><br></pre></td></tr></table></figure></p>
+<p><code>key</code> 参数可以指定数组内对象的 <em>keyPath</em> 的值来选择你需要根据哪个属性排序。</p>
+<h2 id="CFString​Transform"><code>CFString​Transform</code></h2><p>这个函数对于中文来说最大的用处应该是这个了吧<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> string = <span class="type">NSMutableString</span>(string: <span class="string">"中文"</span>)</span><br><span class="line"><span class="type">CFStringTransform</span>(string, <span class="literal">nil</span>, kCFStringTransformMandarinLatin, <span class="literal">false</span>) <span class="comment">// zhōng wén</span></span><br><span class="line"><span class="type">CFStringTransform</span>(string, <span class="literal">nil</span>, kCFStringTransformStripCombiningMarks, <span class="literal">false</span>) <span class="comment">// zhong wen</span></span><br></pre></td></tr></table></figure></p>
+<p>然后你的脑洞就可以做很多事了ԅ(≖‿≖ԅ)</p>
+<h2 id="NSOperation_抽象类"><code>NSOperation</code> <font color="gray" size="2">抽象类</font></h2><p>与 GCD 相比，它可以相对简单的用面向对象的方式来处理稍微复杂的多线程任务，<strong>它可以取消</strong>。<code>NSBlockOperation</code> 是一个好用的实体类。结合 <code>NSOperationQueue</code> 来控制任务的进行。</p>
+<h2 id="CFBag"><code>CFBag</code></h2><p>这确实是一个晦涩的数据类型，集合中的元素可以出现多次，并且会被计数。它的可变版 <code>CFMutableBag</code> 还提供了一堆回调 <code>struct CFBagCallBacks</code>。这里用它对应的 Foundation API <code>NSCountedSet</code> 简单说明。<br><figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">set</span> = <span class="type">NSCountedSet</span>(array: [<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>])</span><br><span class="line"><span class="keyword">set</span>.countForObject(<span class="number">1</span>) <span class="comment">// 5</span></span><br><span class="line"><span class="keyword">set</span>.countForObject(<span class="number">2</span>) <span class="comment">// 3</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="UIAccessibility_非正式协议"><code>UIAccessibility</code> <font color="gray" size="2">非正式协议</font></h2><p><em>UIKit</em> 中所有的标准视图和控件都实现了这个协议，利用协议提供的方法可以方便的添加辅助功能，可以让 <em>VoiceOver</em> 读出你的控件。</p>
+<h2 id="NSCharacter​Set"><code>NSCharacter​Set</code></h2><p>它和它的可变版本 <code>NSMutableCharacterSet</code>，用面向对象的方式来表示一组 Unicode 字符。它经常与 <code>NSString</code> 及 <code>NSScanner</code> 组合起来使用，在不同的字符上做过滤、删除或者分割操作。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>有一些不是很常用的 API 看到之后可能根本看不出来是干什么的，或者看过文档之后很快就忘记了，又或者其实根本不知道文档在说什么(¦3[▓▓] 。</p>
+<p>本文仅以大概一句话来说明API是做什么用的，在考虑如何实现一个功能时可以想起来需要用到的 API</p>
+<p>本篇 API 收集自 <a href="http://nshipster.com">NSHipster</a></p>]]>
+    
+    </summary>
+    
+      <category term="one word api" scheme="http://veracruz.github.io/tags/one-word-api/"/>
+    
+      <category term="iOS" scheme="http://veracruz.github.io/categories/iOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[iOS Adventure: 初章]]></title>
+    <link href="http://veracruz.github.io/2015/07/09/iOS-Adventure-1/"/>
+    <id>http://veracruz.github.io/2015/07/09/iOS-Adventure-1/</id>
+    <published>2015-07-08T22:53:13.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p>很多零散的问题总结起来并不容易，尤其是在之后的日子想要把 <em>当时是如何解决的？</em> 这件事想起来。所以开始尝试记录这些零散的问题。</p>
+<a id="more"></a>
+<h2 id="跳动的元素">跳动的元素</h2><h3 id="Combat">Combat</h3><blockquote>
+<p>当从有 TabBar 的 <code>Controller A</code> 向一个需要隐藏 TabBar 的 <code>Controller B</code> push 时，<code>Controller B</code> 中设置好 Autolayout 与底部相距的 Constraint 的元素们，会在刚刚出现时在下方留下一个 TabBar 高度的空白，稍后就会跳动到正常位置。</p>
+<div align="center"><img src="/images/2015_7/2015-07-09-Constrains_A.png"></div><br><div align="center">类似这样的 Constraint</div>
+
+</blockquote>
+<h3 id="Conflict_Resolved">Conflict Resolved</h3><p>其实这个时候的 Constraint 是这个样子的</p>
+<div align="center"><img src="/images/2015_7/2015-07-09-Contraints_detail.png"></div><br><div align="center"><font color="gray">与 Bottom Layout Guide.Top 连接的 Constraint</font></div>
+
+<p>这个时候只要很简单的改成这个样子就可以了</p>
+<div align="center"><img src="/images/2015_7/2015-07-09-Constraint_Correct.png"></div><br><div align="center"><font color="gray">与 Bottom Layout Guide.Bottom 连接的 Constraint</font></div>
+
+<p><br><br><br></p>
+<h2 id="推送的陷阱">推送的陷阱</h2><h3 id="Combat-1">Combat</h3><blockquote>
+<p>开发环境的推送操作起来基本很简单，生产环境下则会遇到一些小问题，例如这样</p>
+<div align="center"><img src="/images/2015_7/2015-07-22-Push_problem.jpg"></div>
+
+<p>又或者都设置好了，但是就是收不到。</p>
+</blockquote>
+<h3 id="Conflict_Resolved-1">Conflict Resolved</h3><p>首先呢，要在 <em>Developer Member Center</em> 把该有的 Certificates, Identifiers, Provisioning Profiles 都设置或者生成好。这里关键的步骤是这样的</p>
+<hr>
+<p>首先是创建 App ID</p>
+<div align="center"><img src="/images/2015_7/2015-07-22-ids.png"></div>
+
+<hr>
+<p>然后是创建证书，这个是给服务器用的，下面两个根据需要创建</p>
+<div align="center"><img src="/images/2015_7/2015-07-22-certificates.png"></div>
+
+<hr>
+<p>这个选择是跟上面对应的，选择了开发环境的证书，这里也要选择开发环境。下面之所以选择 Ad Hoc 是因为需要真机测试就需要这个，在使用 Xcode 发布到 Apple Store 的时候会选择另外的，这里不需要为此担心。创建完成之后下载生成好的 Provisioning Profile。</p>
+<div align="center"><img src="/images/2015_7/2015-07-22-provisioning.png"></div>
+
+<hr>
+<p>双击下载好的 Provisioning Profile 完成导入。之后需要设置</p>
+<div align="center"><img src="/images/2015_7/2015-07-22-xcode.png"></div>
+
+<p>选择刚刚导入的文件，上面的 <em>Code Signning Identity</em> 也需要选择对应的 Developer (对应 Development) 或者 Distribution (对应 Production)。</p>
+<p>So, you have already done!</p>
+<p>当然不要忘记下面这些</p>
+<div align="center"><img src="/images/2015_7/2015-07-22-other1.png"></div><br><div align="center"><img src="/images/2015_7/2015-07-22-other2.png"></div>
+
+<p><br><br><br></p>
+<h2 id="覆盖不掉的属性">覆盖不掉的属性</h2><h3 id="Combat-2">Combat</h3><blockquote>
+<p>当你想直接覆盖一个系统类的属性时，会得到一个错误</p>
+<div align="center"><img src="/images/2015_7/2015-07-09-Override-Error.png"></div><br><div align="center"><font color="gray">直接重载是不行的</font></div>
+
+</blockquote>
+<h3 id="Conflict_Resolved-2">Conflict Resolved</h3><p>错误信息很明确</p>
+<blockquote>
+<p>Setter for ‘selected’ with Objective-C selector ‘setSelected:’ conflicts with setter for ‘selected’ from superclass ‘UICollectionViewCell’ with the same Objective-C selector<br>Cannot override with a stored property ‘selected’</p>
+</blockquote>
+<p>不能直接重载，需要加上 setter 和 getter</p>
+<div align="center"><img src="/images/2015_7/2015-07-09-Override-solved.png"></div>
+
+
+<script src="/js/category.js"></script>]]></content>
+    <summary type="html">
+    <![CDATA[<p>很多零散的问题总结起来并不容易，尤其是在之后的日子想要把 <em>当时是如何解决的？</em> 这件事想起来。所以开始尝试记录这些零散的问题。</p>]]>
+    
+    </summary>
+    
+      <category term="iOS Adventure" scheme="http://veracruz.github.io/tags/iOS-Adventure/"/>
+    
+      <category term="iOS" scheme="http://veracruz.github.io/categories/iOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[在 Mac 上使用 Nginx + Passenger 部署 Rails]]></title>
+    <link href="http://veracruz.github.io/2015/01/15/rails-deployment-on-nginx-with-passenger-mac/"/>
+    <id>http://veracruz.github.io/2015/01/15/rails-deployment-on-nginx-with-passenger-mac/</id>
+    <published>2015-01-15T05:06:58.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p>开始接触 Rails 看到很多关于它的赞誉(其实最早看到的是负面的┐(─ <em> ─)┌结尾附上链接)，不过在一开始就遭遇了很多问题，要把整个基本的流程走一遍还是一波三折的( ╯─ </em> ─)╯┴—┴ </p>
+<p>这次整理一下关于部署的问题。</p>
+<a id="more"></a>
+<h3 id="前提一览">前提一览</h3><hr>
+<p>各种版本号</p>
+<pre>
+Mac OS X             10.10.2
+Nginx                1.6.2
+Phusion Passenger    4.0.57
+Ruby                 2.0.0p481
+Rails                4.1.7
+Rake                 10.4.2
+</pre>
+
+<p>Rails 的示例项目使用这个➡️<a href="http://guides.ruby-china.org/getting_started.html" target="_blank" rel="external">Rails 使用指南 - Rails 入门</a>⬅️里面的项目</p>
+<p><br><br></p>
+<h3 id="问题一览">问题一览</h3><hr>
+<p>在这个环境下遇到的问题如下</p>
+<ul>
+<li>Passenger 安装配置比较蛋疼</li>
+<li>Nginx 的配置</li>
+<li>Rails 项目直接复制粘贴是无法正常使用的</li>
+</ul>
+<p><br><br></p>
+<h3 id="完整流程">完整流程</h3><hr>
+<p>好了，终于到了搞定这些问题的时候。</p>
+<h4 id="~_安装服务器_~">~ 安装服务器 ~</h4><p>首先我们要安装 <em>Nginx</em> 和 <em>Passenger</em> ，这里选择了一个偷懒的办法，安装 Passenger 然后使用它自带的工具 <code>passenger-install-nginx-module</code> 来完成 Nginx 的安装配置。原因是 Nginx 默认的编译是不能支持 Passenger 的，所以需要重新编译，这个工具就是为了省掉这个步骤。</p>
+<p>在 Mac 环境下，使用 <em>HomeBrew</em> 来安装 Passenger 和 MySQL，只需要灰常简单的两句 <code>brew install passenger</code> <code>brew install mysql</code> 搞定，这里可以使用 <code>which passenger</code> 来查看安装的位置。</p>
+<p>然后关于 MySQL 也是需要处理一下才能正常使用</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#这条命令查看配置文件的读取位置及顺序，可以看到类似下面的输出</span></span><br><span class="line"><span class="comment">#/etc/my.cnf /etc/mysql/my.cnf /usr/local/etc/my.cnf ~/.my.cnf</span></span><br><span class="line"><span class="comment">#如果这些目录下面本来有文件，需要删除来保证初始化为默认配置</span></span><br><span class="line">mysqld --help --verbose | more</span><br><span class="line"></span><br><span class="line"><span class="comment">#初始化安装 MySQL</span></span><br><span class="line">sudo mysql_install_db \</span><br><span class="line">--verbose --user=`root` \</span><br><span class="line">--basedir=<span class="string">"<span class="variable">$(brew --prefix mysql)</span>"</span> \</span><br><span class="line">--datadir=/usr/<span class="built_in">local</span>/var/mysql \</span><br><span class="line">--tmpdir=/tmp \</span><br><span class="line">--explicit_defaults_<span class="keyword">for</span>_timestamp</span><br><span class="line"></span><br><span class="line"><span class="comment">#启动和停止</span></span><br><span class="line">mysql.server start</span><br><span class="line">mysql.server stop</span><br></pre></td></tr></table></figure>
+<p>这个时候就可以按需修改 my.cnf</p>
+<p>接下来执行 <code>passenger-install-nginx-module</code> 按照指示安装 Nginx 即可。</p>
+<p><br></p>
+<h4 id="~_配置_Nginx_~">~ 配置 Nginx ~</h4><p>直接上例子</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">server &#123;&#10;    &#10;    # &#38656;&#35201;&#30417;&#21548;&#30340;&#31471;&#21475;&#10;    listen       8080;&#10;    &#10;    # &#36825;&#37324;&#26681;&#25454;&#26381;&#21153;&#22120;&#30340;&#22495;&#21517;&#26469;&#20462;&#25913;&#10;    server_name  localhost;&#10;    &#10;    # &#21487;&#20197;&#20877;&#36825;&#37324;&#22635;&#20889; Rails &#39033;&#30446;&#30340;&#20301;&#32622;&#65292;&#27880;&#24847;&#19968;&#23450;&#35201;&#25351;&#21521; public &#30446;&#24405;&#10;    root         /your_rails_project/public;&#10;    &#10;    # &#25171;&#24320; Passenger&#10;    passenger_enabled on;&#10;&#10;    # &#36755;&#20986;&#26085;&#24535;&#21040;&#25991;&#20214;&#10;    error_log /your_log_dir/your_log_file.txt debug;&#10;   &#10;    # &#19979;&#38754;&#26159;&#21487;&#36873;&#26041;&#26696;&#10;    #location / &#123;&#10;    #    root   /your_rails_project/public;&#10;    #    index  index.html index.php;&#10;    #    passenger_enabled on;&#10;    #&#125;&#10;    &#10;    # &#20063;&#21487;&#20197;&#25351;&#23450;&#33258;&#24049;&#38656;&#35201;&#30340; URI&#10;    #location ~ ^/subapp(/.*|$) &#123;&#10;    #    alias /Users/silence/Vez/web/Nginx/blog/public$1;&#10;    #    passenger_base_uri /subapp;&#10;    #    passenger_app_root /Users/silence/Vez/web/Nginx/blog;&#10;    #    passenger_document_root /Users/silence/Vez/web/Nginx/blog/public;&#10;    #    passenger_enabled on;&#10;    #&#125;&#10;&#125;</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h3 id="~_部署_Rails_项目_~">~ 部署 Rails 项目 ~</h3><p>复制整个项目到上面配置里写下的路径，或者已经直接设置路径到项目目录。这个时候直接打开浏览器查看，会出现一个错误，查看 Nginx 日志，会有类似这样的记录</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2015</span>/<span class="number">01</span>/<span class="number">15</span> <span class="number">11</span>:<span class="number">57</span>:<span class="number">51</span> [error] <span class="number">29238</span><span class="preprocessor">#<span class="number">0</span>: *<span class="number">1</span> upstream prematurely closed connection while reading response header from upstream, client: <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>, server: localhost, request: <span class="string">"GET / HTTP/1.1"</span>, upstream: <span class="string">"passenger:/tmp/passenger.1.0.29230/generation-0/request:"</span>, host: <span class="string">"localhost:8080"</span></span></span><br></pre></td></tr></table></figure>
+<p>在项目目录下执行命令 <code>rake secret RAILS_ENV=production</code>，打开文件 <code>config/secret.yml</code>，修改其中的 <code>&lt;%= ENV[&quot;SECRET_KEY_BASE&quot;] %&gt;</code> 为前面命令的输出值。</p>
+<p>这个时候再用浏览器访问，会发现依旧有错误，查看项目日志，是类似于数据库没有那个表又或者资源找不到的问题。执行命令 <code>rake assets:precompile RAILS_ENV=production</code> 和 <code>rake db:migrate RAILS_ENV=production</code>，其他单独的 js 和 css 文件在 <code>config/initializers/assets.rb</code> 里面配置。</p>
+<p>这个时候再打开浏览器，终于可以正常访问啦╭(￣▽￣)╯╧═╧</p>
+<p><br><br></p>
+<h4 id="参考链接">参考链接</h4><hr>
+<ol>
+<li><a href="http://developer.51cto.com/art/201303/386391.htm" target="_blank" rel="external">让30台服务器缩减到2台：从Ruby迁移到Go语言</a></li>
+<li><a href="http://robbinfan.com/blog/40/ruby-off-rails" target="_blank" rel="external">Ruby社区应该去Rails化了</a></li>
+</ol>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>开始接触 Rails 看到很多关于它的赞誉(其实最早看到的是负面的┐(─ <em> ─)┌结尾附上链接)，不过在一开始就遭遇了很多问题，要把整个基本的流程走一遍还是一波三折的( ╯─ </em> ─)╯┴—┴ </p>
+<p>这次整理一下关于部署的问题。</p>]]>
+    
+    </summary>
+    
+      <category term="Web" scheme="http://veracruz.github.io/categories/Web/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[为 Octopress 中的代码块添加高亮行的功能]]></title>
+    <link href="http://veracruz.github.io/2014/12/22/octopress-highlight-line-in-code-block/"/>
+    <id>http://veracruz.github.io/2014/12/22/octopress-highlight-line-in-code-block/</id>
+    <published>2014-12-22T02:07:49.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p>在 <em>Octopress</em> 的官方文档中看到，反引号代码块(Backtick Code Block)是有高亮行的功能的</p>
+<p style="font-size:30px;color:red">But</p>
+
+<a id="more"></a>
+<p>我们先看这个网页 – <a href="http://octopress.org/docs/plugins/backtick-codeblock/" target="_blank" rel="external">Backtick Code Blocks</a></p>
+<p><img src="/images/2014_12/backtick_codeblock.png" alt="官方文档截图"></p>
+<p>截图时间 2014.12.22</p>
+<p>事实上是无论我把 <code>mark:1, 2-3</code> 这种类似的写在任何地方都没效果。也许是我打开的方式不对，万能的 StackOverflow 上也没找到相关的解决办法，然后只好去查看代码。</p>
+<p>处理反引号代码块的代码在 <code>/plugins/backtick_code_block.rb</code> <code>/plugins/pygments_code.rb</code> 两个文件中。两段代码都很短，其中并没有包含高亮行的处理，虽然没有注释，但是很容易看懂(论命名的重要性(〜￣△￣)〜)，所以自己把这个功能加上吧。</p>
+<p>顺带一提，<em>Pygments</em> 支持的语言还是相当多的，看这里 ~~ <a href="http://pygments.org/docs/lexers/" target="_blank" rel="external">Available lexers - Pygments</a></p>
+<p><br></p>
+<div class="post_attention"><b>Attention: </b>不识别同时含有标题、链接等的参数。未做样式兼容。高亮背景宽度是个坑爹的固定值。以后可能会更新<em>(:3」∠)</em></div>
+
+<p><br></p>
+<h3 id="确定格式">确定格式</h3><hr>
+<p>第一次改动就先不考虑太多，把处理这个行高亮的情况单独处理，也就是不能同时有标题链接等参数。格式就使用官方给出的格式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#10;ruby mark:#, #-#&#10; # some codes</span><br></pre></td></tr></table></figure>
+<p>正则表达式就是 (ruby 中的)</p>
+<p><code>/([^\s]+)\s+mark:\s?([\s0-9,-]*)/i</code></p>
+<p>通过 <code>$1</code> <code>$2</code> 分别取到代码块的语言和需要高亮的行。</p>
+<p>渲染代码块的函数是 <code>/plugins/pygments_code.rb</code> 中的 <code>highlight (str, lang)</code>，然后里面又调用了 <code>tableize_code (str, lang = &#39;&#39;)</code> ，要把 mark 的参数加进去，具体下面会直接上代码，很简单，已注释。</p>
+<p>另外高亮的样式也要自己处理一下，暂时使用一个牵强的解决办法 【 (╯‵□′)╯︵┻━┻ 怎么不好好看 css</p>
+<p>在 <code>/source/_includes/custom/_footer.html</code> 中加入处理 <code>highlight_line</code> 的样式</p>
+<p><br><br></p>
+<h3 id="上代码">上代码</h3><hr>
+<p>直接下载覆盖到指定路径 – <a href="/document/octopress_highlight_line_code.zip">给 Octopress 代码块添加高亮指定行的代码</a></p>
+<p>三段代码重点已高亮并注释，注意高亮样式处理可能会在一些浏览器中看不到(比如说，坑爹 IE (:3」∠))，未做兼容。</p>
+<p><code>/plugins/backtick_code_block.rb</code> 内容</p>
+<figure class="highlight ruby"><figcaption><span>mark: 9, 23, 25-30, 50-52</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span> <span class="string">'./plugins/pygments_code'</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">module</span> <span class="title">BacktickCodeBlock</span></span></span><br><span class="line">  <span class="keyword">include</span> <span class="constant">HighlightCode</span></span><br><span class="line">  <span class="constant">AllOptions</span> = <span class="regexp">/([^\s]+)\s+(.+?)\s+(https?:\/\/\S+|\/\S+)\s*(.+)?/i</span></span><br><span class="line">  <span class="constant">LangCaption</span> = <span class="regexp">/([^\s]+)\s*(.+)?/i</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># hightlight specific line option grep</span></span><br><span class="line">  <span class="constant">MarkOptions</span> = <span class="regexp">/([^\s]+)\s+mark:\s?([\s0-9,-]*)/i</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">render_code_block</span><span class="params">(input)</span></span></span><br><span class="line">    <span class="variable">@options</span> = <span class="keyword">nil</span></span><br><span class="line">    <span class="variable">@caption</span> = <span class="keyword">nil</span></span><br><span class="line">    <span class="variable">@lang</span> = <span class="keyword">nil</span></span><br><span class="line">    <span class="variable">@url</span> = <span class="keyword">nil</span></span><br><span class="line">    <span class="variable">@title</span> = <span class="keyword">nil</span></span><br><span class="line"></span><br><span class="line">    input.gsub(<span class="regexp">/^`&#123;3&#125; *([^\n]+)?\n(.+?)\n`&#123;3&#125;/m</span>) <span class="keyword">do</span></span><br><span class="line">      <span class="variable">@options</span> = <span class="variable">$1</span> || <span class="string">''</span></span><br><span class="line">      str = <span class="variable">$2</span></span><br><span class="line"></span><br><span class="line">      <span class="comment"># mark line number origin string</span></span><br><span class="line">      <span class="variable">@mark</span> = <span class="keyword">nil</span></span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> <span class="variable">@options</span> =~ <span class="constant">MarkOptions</span></span><br><span class="line">        <span class="variable">@lang</span> = <span class="variable">$1</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># get origin line number string, Example: "1, 2-5" means highlight line 1 and 2,3,4,5</span></span><br><span class="line">        <span class="variable">@mark</span> = <span class="variable">$2</span></span><br><span class="line"></span><br><span class="line">      <span class="keyword">elsif</span> <span class="variable">@options</span> =~ <span class="constant">AllOptions</span></span><br><span class="line">        <span class="variable">@lang</span> = <span class="variable">$1</span></span><br><span class="line">        <span class="variable">@caption</span> = <span class="string">"&lt;figcaption&gt;&lt;span&gt;<span class="subst">#&#123;<span class="variable">$2</span>&#125;</span>&lt;/span&gt;&lt;a href='<span class="subst">#&#123;<span class="variable">$3</span>&#125;</span>'&gt;<span class="subst">#&#123;<span class="variable">$4</span> || <span class="string">'link'</span>&#125;</span>&lt;/a&gt;&lt;/figcaption&gt;"</span></span><br><span class="line">      <span class="keyword">elsif</span> <span class="variable">@options</span> =~ <span class="constant">LangCaption</span></span><br><span class="line">        <span class="variable">@lang</span> = <span class="variable">$1</span></span><br><span class="line">        <span class="variable">@caption</span> = <span class="string">"&lt;figcaption&gt;&lt;span&gt;<span class="subst">#&#123;<span class="variable">$2</span>&#125;</span>&lt;/span&gt;&lt;/figcaption&gt;"</span></span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> str.match(<span class="regexp">/\A( &#123;4&#125;|\t)/</span>)</span><br><span class="line">        str = str.gsub(<span class="regexp">/^( &#123;4&#125;|\t)/</span>, <span class="string">''</span>)</span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">      <span class="keyword">if</span> <span class="variable">@lang</span>.<span class="keyword">nil</span>? || <span class="variable">@lang</span> == <span class="string">'plain'</span></span><br><span class="line">        code = tableize_code(str.gsub(<span class="string">'&lt;'</span>,<span class="string">'&amp;lt;'</span>).gsub(<span class="string">'&gt;'</span>,<span class="string">'&amp;gt;'</span>))</span><br><span class="line">        <span class="string">"&lt;figure class='code'&gt;<span class="subst">#&#123;<span class="variable">@caption</span>&#125;</span><span class="subst">#&#123;code&#125;</span>&lt;/figure&gt;"</span></span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">if</span> <span class="variable">@lang</span>.<span class="keyword">include</span>? <span class="string">"-raw"</span></span><br><span class="line">          raw = <span class="string">"``` <span class="subst">#&#123;<span class="variable">@options</span>.sub(<span class="string">'-raw'</span>, <span class="string">''</span>)&#125;</span>\n"</span></span><br><span class="line">          raw += str</span><br><span class="line">          raw += <span class="string">"\n```\n"</span></span><br><span class="line">        <span class="keyword">elsif</span> !<span class="variable">@mark</span>.<span class="keyword">nil</span>?  <span class="comment">#if has mark argument</span></span><br><span class="line">          code = highlight(str, <span class="variable">@lang</span>, <span class="variable">@mark</span>)</span><br><span class="line">          <span class="string">"&lt;figure class='code'&gt;<span class="subst">#&#123;<span class="variable">@caption</span>&#125;</span><span class="subst">#&#123;code&#125;</span>&lt;/figure&gt;"</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">          code = highlight(str, <span class="variable">@lang</span>)</span><br><span class="line">          <span class="string">"&lt;figure class='code'&gt;<span class="subst">#&#123;<span class="variable">@caption</span>&#125;</span><span class="subst">#&#123;code&#125;</span>&lt;/figure&gt;"</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p><code>/plugins/pygments_code.rb</code> 内容</p>
+<figure class="highlight ruby"><figcaption><span>mark: 15, 39-42, 50-54, 60-75</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span> <span class="string">'pygments'</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">'fileutils'</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">'digest/md5'</span></span><br><span class="line"></span><br><span class="line"><span class="constant">PYGMENTS_CACHE_DIR</span> = <span class="constant">File</span>.expand_path(<span class="string">'../../.pygments-cache'</span>, __FILE_<span class="number">_</span>)</span><br><span class="line"><span class="constant">FileUtils</span>.mkdir_p(<span class="constant">PYGMENTS_CACHE_DIR</span>)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">module</span> <span class="title">HighlightCode</span></span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">highlight</span><span class="params">(str, lang, mark = <span class="keyword">nil</span>)</span></span></span><br><span class="line">    lang = <span class="string">'ruby'</span> <span class="keyword">if</span> lang == <span class="string">'ru'</span></span><br><span class="line">    lang = <span class="string">'objc'</span> <span class="keyword">if</span> lang == <span class="string">'m'</span></span><br><span class="line">    lang = <span class="string">'perl'</span> <span class="keyword">if</span> lang == <span class="string">'pl'</span></span><br><span class="line">    lang = <span class="string">'yaml'</span> <span class="keyword">if</span> lang == <span class="string">'yml'</span></span><br><span class="line">    str = pygments(str, lang).match(<span class="regexp">/&lt;pre&gt;(.+)&lt;\/pre&gt;/m</span>)[<span class="number">1</span>].to_s.gsub(<span class="regexp">/ *$/</span>, <span class="string">''</span>) <span class="comment">#strip out divs &lt;div class="highlight"&gt;</span></span><br><span class="line">    tableize_code(str, lang, mark)</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">pygments</span><span class="params">(code, lang)</span></span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">defined</span>?(<span class="constant">PYGMENTS_CACHE_DIR</span>)</span><br><span class="line">      path = <span class="constant">File</span>.join(<span class="constant">PYGMENTS_CACHE_DIR</span>, <span class="string">"<span class="subst">#&#123;lang&#125;</span>-<span class="subst">#&#123;<span class="constant">Digest::MD5</span>.hexdigest(code)&#125;</span>.html"</span>)</span><br><span class="line">      <span class="keyword">if</span> <span class="constant">File</span>.exist?(path)</span><br><span class="line">        highlighted_code = <span class="constant">File</span>.read(path)</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">begin</span></span><br><span class="line">          highlighted_code = <span class="constant">Pygments</span>.highlight(code, <span class="symbol">:lexer</span> =&gt; lang, <span class="symbol">:formatter</span> =&gt; <span class="string">'html'</span>, <span class="symbol">:options</span> =&gt; &#123;<span class="symbol">:encoding</span> =&gt; <span class="string">'utf-8'</span>, <span class="symbol">:startinline</span> =&gt; <span class="keyword">true</span>&#125;)</span><br><span class="line">        <span class="keyword">rescue</span> <span class="constant">MentosError</span></span><br><span class="line">          raise <span class="string">"Pygments can't parse unknown language: <span class="subst">#&#123;lang&#125;</span>."</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="constant">File</span>.open(path, <span class="string">'w'</span>) &#123;|f| f.print(highlighted_code) &#125;</span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      highlighted_code = <span class="constant">Pygments</span>.highlight(code, <span class="symbol">:lexer</span> =&gt; lang, <span class="symbol">:formatter</span> =&gt; <span class="string">'html'</span>, <span class="symbol">:options</span> =&gt; &#123;<span class="symbol">:encoding</span> =&gt; <span class="string">'utf-8'</span>, <span class="symbol">:startinline</span> =&gt; <span class="keyword">true</span>&#125;)</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    highlighted_code</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">tableize_code</span> <span class="params">(str, lang = <span class="string">''</span>, mark = <span class="keyword">nil</span>)</span></span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># get line indexes that need to highlight</span></span><br><span class="line">    lines = []</span><br><span class="line">    <span class="keyword">if</span> !mark.<span class="keyword">nil</span>?</span><br><span class="line">      lines = get_mark_index(mark)</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    table = <span class="string">'&lt;div class="highlight"&gt;&lt;table&gt;&lt;tr&gt;&lt;td class="gutter"&gt;&lt;pre class="line-numbers"&gt;'</span></span><br><span class="line">    code = <span class="string">''</span></span><br><span class="line">    str.lines.each_with_index <span class="keyword">do</span> |line,index|</span><br><span class="line">      table += <span class="string">"&lt;span class='line-number'&gt;<span class="subst">#&#123;index+<span class="number">1</span>&#125;</span>&lt;/span&gt;\n"</span></span><br><span class="line"></span><br><span class="line">      <span class="comment"># if the line needs to highlight then add a class name "highlight_line" to class attribute</span></span><br><span class="line">      <span class="keyword">if</span> lines[index+<span class="number">1</span>] == <span class="keyword">true</span></span><br><span class="line">        code += <span class="string">"&lt;span class='line highlight_line'&gt;<span class="subst">#&#123;line&#125;</span>&lt;/span&gt;"</span></span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">        code  += <span class="string">"&lt;span class='line'&gt;<span class="subst">#&#123;line&#125;</span>&lt;/span&gt;"</span></span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    table += <span class="string">"&lt;/pre&gt;&lt;/td&gt;&lt;td class='code'&gt;&lt;pre&gt;&lt;code class='<span class="subst">#&#123;lang&#125;</span>'&gt;<span class="subst">#&#123;code&#125;</span>&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;"</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># get the line numbers that need to highlight &amp; return the array of index</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">get_mark_index</span> <span class="params">(mark)</span></span></span><br><span class="line">    option = <span class="regexp">/[0-9\-]+/</span></span><br><span class="line">    indexes = mark.scan(option)</span><br><span class="line">    lines = []</span><br><span class="line"></span><br><span class="line">    indexes.each <span class="keyword">do</span> |index|</span><br><span class="line">      <span class="keyword">if</span> index =~ <span class="regexp">/([0-9]+)\-([0-9]+)/</span></span><br><span class="line">        start = <span class="variable">$1</span>.to_i</span><br><span class="line">        final = <span class="variable">$2</span>.to_i</span><br><span class="line">        (start..final).each &#123; |i| lines[i] = <span class="keyword">true</span> &#125;</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">        lines[index.to_i] = <span class="keyword">true</span></span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    lines</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p><code>/source/_includes/custom/footer.html</code> 内容</p>
+<figure class="highlight html"><figcaption><span>mark: 9-14</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">p</span>&gt;</span></span><br><span class="line">  Copyright &amp;copy; &#123;&#123; site.time | date: "%Y" &#125;&#125; - &#123;&#123; site.author &#125;&#125; -</span><br><span class="line">  <span class="tag">&lt;<span class="title">span</span> <span class="attribute">class</span>=<span class="value">"credit"</span>&gt;</span>Powered by <span class="tag">&lt;<span class="title">a</span> <span class="attribute">href</span>=<span class="value">"http://octopress.org"</span>&gt;</span>Octopress<span class="tag">&lt;/<span class="title">a</span>&gt;</span><span class="tag">&lt;/<span class="title">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><br><span class="line">    <span class="keyword">var</span> _bdhmProtocol = ((<span class="string">"https:"</span> == <span class="built_in">document</span>.location.protocol) ? <span class="string">" https://"</span> : <span class="string">" http://"</span>);</span><br><span class="line">    <span class="built_in">document</span>.write(<span class="built_in">unescape</span>(<span class="string">"%3Cscript src='"</span> + _bdhmProtocol + <span class="string">"hm.baidu.com/h.js%3F1927408f733bc1f82c711c8aece7a832' type='text/javascript'%3E%3C/script%3E"</span>));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> highlight_lines = <span class="built_in">document</span>.getElementsByClassName(<span class="string">"highlight_line"</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; highlight_lines.length; i++) &#123;</span><br><span class="line">        highlight_lines[i].style.paddingRight = <span class="string">"2000px"</span>;</span><br><span class="line">        <span class="comment">// highlight_lines[i].style.width = "100%";</span></span><br><span class="line">        highlight_lines[i].style.backgroundColor = <span class="string">"rgba(80,80,80,0.5)"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span></span><br></pre></td></tr></table></figure>]]></content>
+    <summary type="html">
+    <![CDATA[<p>在 <em>Octopress</em> 的官方文档中看到，反引号代码块(Backtick Code Block)是有高亮行的功能的</p>
+<p style="font-size:30px;color:red">But</p>]]>
+    
+    </summary>
+    
+      <category term="Blog Relations" scheme="http://veracruz.github.io/categories/Blog-Relations/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Ubuntu 14.10 邮件服务器搭建：Postfix 和 dovecot ]]></title>
+    <link href="http://veracruz.github.io/2014/12/19/ubuntu-14-dot-10-postfix-with-dovecot/"/>
+    <id>http://veracruz.github.io/2014/12/19/ubuntu-14-dot-10-postfix-with-dovecot/</id>
+    <published>2014-12-19T07:44:48.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p>这几天需要在服务器上搭个邮件服务器，没想到还挺麻烦的。</p>
+<p>麻烦主要来自两方面，可以选择的邮件服务器软件略多(例如 qmail xmail sendmail 等等，还有转发服务，验证服务相关的，cyrus，sasl等等)，各种配置略苦。</p>
+<p>各种 Search 之后选择了 <em>Postfix</em> 和 <em>dovecot</em>，<em>Postfix</em> 是本体，<em>dovecot</em> 作为转发服务(IMAP, POP3, SMTP)。</p>
+<a id="more"></a>
+<div class="post_warn"><b>Important: </b>以下方法不使用 ssl ，对安全性有要求的话，请勿采用！</div>
+
+<p><br></p>
+<h3 id="软件包安装">软件包安装</h3><hr>
+<p>直接上命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># use root</span></span><br><span class="line">sudo -i</span><br><span class="line"></span><br><span class="line">apt-get install postfix</span><br><span class="line"></span><br><span class="line"><span class="comment"># if you get a fatal, usually use "apt-get -f install"</span></span><br><span class="line">apt-get install dovecot-core dovecot-pop3d dovecot-smtpd</span><br><span class="line"></span><br><span class="line">apt-get install mail-stack-delivery</span><br><span class="line"></span><br><span class="line">apt-get install mailutils</span><br></pre></td></tr></table></figure>
+<p>以上命令安装完所需的软件包，接下来就是蛋疼的配置时间啦。老实说，要想熟悉全部设置选项非常费劲也费时间，还要正确的设置，相当苦啊 Σ( ￣□￣||)</p>
+<p>so~，we need search engine. Then I got a nice guide article:</p>
+<p><a href="http://www.nowtaxes.com.tw/node/1147" target="_blank" rel="external">使用 Ubuntu 安裝郵件伺服器 (Mail Server)：Postfix + Dovecot + Openwebmail</a></p>
+<p>2010年的文章，所以有些内容已经不适用了，不过只有个别地方。</p>
+<p>文章中最后的 Openwebmail 的依赖库有点略旧了，装到最后出现版本问题，要求不高就简单的用客户端就好了。</p>
+<p>下面整理一下文章内容。</p>
+<p><br><br></p>
+<h3 id="配置">配置</h3><hr>
+<p>修改 <code>/etc/postfix/main.cf</code></p>
+<table style="border:0;"><br>    <tr><br>        <td><li>第  9行</li></td><br>        <td>删除 (Ubuntu)</td><br>    </tr><br>    <tr><br>        <td><li>第21行到第25行&nbsp;&nbsp;</li></td><br>        <td>注释掉</td><br>    </tr><br>    <tr><br>        <td><li>第34行</li></td><br>        <td>添加自己的域名，例如 mail.example.com</td><br>    </tr><br>    <tr><br>        <td><li>第41行</li></td><br>        <td>注释掉，使用 mbox 格式</td><br>    </tr><br>    <tr><br>        <td><li>第54行</li></td><br>        <td>注释掉</td><br>    </tr><br>    <tr><br>        <td><li>第56行到第61行</li></td><br>        <td>注释掉</td><br>    </tr><br></table><br><br><br><br><br>变更的地方已高亮<br><br>配置文件中的最后几行，要在安装完 <code>mail-stack-delivery</code> 包之后才会出现<br><br><br><figure class="highlight"><figcaption><span>mark: 9, 21-25, 34, 41, 54, 56-61</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># See /usr/share/postfix/main.cf.dist for a commented, more complete version&#10; &#10; &#10;# Debian specific:  Specifying a file name will cause the first&#10;# line of that file to be used as the name.  The Debian default&#10;# is /etc/mailname.&#10;#myorigin = /etc/mailname&#10; &#10;smtpd_banner = $myhostname ESMTP $mail_name&#10;biff = no&#10; &#10;# appending .domain is the MUA&#39;s job.&#10;append_dot_mydomain = no&#10; &#10;# Uncomment the next line to generate &#34;delayed mail&#34; warnings&#10;#delay_warning_time = 4h&#10; &#10;readme_directory = no&#10; &#10;# TLS parameters&#10;#smtpd_tls_cert_file = /etc/ssl/certs/ssl-mail.pem&#10;#smtpd_tls_key_file = /etc/ssl/private/ssl-mail.key&#10;#smtpd_use_tls = yes&#10;#smtpd_tls_session_cache_database = btree:$&#123;data_directory&#125;/smtpd_scache&#10;#smtp_tls_session_cache_database = btree:$&#123;data_directory&#125;/smtp_scache&#10; &#10;# See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for&#10;# information on enabling SSL in the smtp client.&#10; &#10;myhostname = dns.example.com.tw&#10;alias_maps = hash:/etc/aliases&#10;alias_database = hash:/etc/aliases&#10;myorigin = /etc/mailname&#10;mydestination = localhost, localhost.localdomain, mail.example.com&#10;relayhost = &#10;mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128&#10;mailbox_size_limit = 0&#10;recipient_delimiter = +&#10;inet_interfaces = all&#10; &#10;#home_mailbox = Maildir/&#10; &#10;smtpd_sasl_auth_enable = yes&#10;smtpd_sasl_type = dovecot&#10;smtpd_sasl_path = private/dovecot-auth&#10;smtpd_sasl_authenticated_header = yes&#10;smtpd_sasl_security_options = noanonymous&#10;smtpd_sasl_local_domain = $myhostname&#10;broken_sasl_auth_clients = yes&#10; &#10;smtpd_recipient_restrictions = reject_unknown_sender_domain, reject_unknown_recipient_domain, reject_unauth_pipelining, permit_mynetworks, permit_sasl_authenticated, reject_unauth_destination&#10;smtpd_sender_restrictions = reject_unknown_sender_domain&#10; &#10;#mailbox_command = /usr/lib/dovecot/deliver -c /etc/dovecot/conf.d/01-dovecot-postfix.conf -n -m &#34;$&#123;EXTENSION&#125;&#34;&#10; &#10;#smtp_use_tls = yes&#10;#smtpd_tls_received_header = yes&#10;#smtpd_tls_mandatory_protocols = SSLv3, TLSv1&#10;#smtpd_tls_mandatory_ciphers = medium&#10;#smtpd_tls_auth_only = yes&#10;#tls_random_source = dev:/dev/urandom</span><br></pre></td></tr></table></figure><br><br>接下来修改 <code>/etc/dovecot/conf.d/99-mail-stack-delivery.conf</code><br><br><table><br>    <tr><br>        <td>第 3 行</td><br>        <td>disable_plaintext_auth = no，使用 Ubuntu 用户账户的用户名和密码</td><br>    </tr><br>    <tr><br>        <td>第 4 行</td><br>        <td>ssl = no，不使用 SSL 认证</td><br>    </tr><br>    <tr><br>        <td>第 5 行到第 7 行</td><br>        <td>注释掉</td><br>    </tr><br>    <tr><br>        <td>第 8 行</td><br>        <td>注释掉，使用 mbox 格式</td><br>    </tr><br>    <tr><br>        <td>第 9 行</td><br>        <td>加一行 mail_location = mbox:~/mail:INBOX=/var/spool/mail/%u</td><br>    </tr><br></table>
+
+
+<figure class="highlight"><figcaption><span>mark:3-9</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># Some general options&#10;protocols = imap pop3 sieve&#10;disable_plaintext_auth = no&#10;ssl = no&#10;# ssl_cert = &#60;/etc/dovecot/dovecot.pem&#10;# ssl_key = &#60;/etc/dovecot/private/dovecot.pem&#10;# ssl_cipher_list = ALL:!LOW:!SSLv2:ALL:!aNULL:!ADH:!eNULL:!EXP:RC4+RSA:+HIGH:+MEDIUM&#10;# mail_location = maildir:~/Maildir&#10;mail_location = mbox:~/mail:INBOX=/var/mail/%u # (for mbox)&#10;auth_username_chars = abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890.-_@&#10;&#10;# IMAP configuration&#10;protocol imap &#123;&#10;        mail_max_userip_connections = 10&#10;        imap_client_workarounds = delay-newmail&#10;&#125;&#10;&#10;# POP3 configuration&#10;protocol pop3 &#123;&#10;        mail_max_userip_connections = 10&#10;        pop3_client_workarounds = outlook-no-nuls oe-ns-eohe&#10;&#125;&#10;&#10;# LDA configuration&#10;protocol lda &#123;&#10;        postmaster_address = postmaster&#10;        mail_plugins = sieve&#10;        quota_full_tempfail = yes&#10;        deliver_log_format = msgid=%m: %$&#10;        rejection_reason = Your message to &#60;%t&#62; was automatically rejected:%n%r&#10;&#125;&#10;&#10;# Plugins configuration&#10;plugin &#123;&#10;        sieve=~/.dovecot.sieve&#10;        sieve_dir=~/sieve&#10;&#125;&#10;&#10;# Authentication configuration&#10;auth_mechanisms = plain login&#10;&#10;service auth &#123;&#10;  # Postfix smtp-auth&#10;  unix_listener /var/spool/postfix/private/dovecot-auth &#123;&#10;    mode = 0660&#10;    user = postfix&#10;    group = postfix&#10;  &#125;&#10;&#125;</span><br></pre></td></tr></table></figure>
+<p>使用命令测试一下 <code>telnet localhost 25</code></p>
+<p>Postfix 会有如下回应</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Trying <span class="number">127.0</span>.<span class="number">0.1</span>...</span><br><span class="line">Connected to localhost.</span><br><span class="line">Escape character is <span class="string">'^]'</span>.</span><br><span class="line"><span class="number">220</span> yourhostname ESMTP Postfix</span><br></pre></td></tr></table></figure>
+<p>然后使用命令 <code>ehlo localhost</code></p>
+<p>回应如下的话就设定 ok 啦</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">250</span>-yourhostname</span><br><span class="line"><span class="number">250</span>-PIPELINING</span><br><span class="line"><span class="number">250</span>-SIZE <span class="number">10240000</span></span><br><span class="line"><span class="number">250</span>-VRFY</span><br><span class="line"><span class="number">250</span>-ETRN</span><br><span class="line"><span class="number">250</span>-AUTH PLAIN LOGIN</span><br><span class="line"><span class="number">250</span>-AUTH=PLAIN LOGIN</span><br><span class="line"><span class="number">250</span>-ENHANCEDSTATUSCODES</span><br><span class="line"><span class="number">250</span>-<span class="number">8</span>BITMIME</span><br><span class="line"><span class="number">250</span> DSN</span><br></pre></td></tr></table></figure>
+<p>不要忘记创建用户</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># create a account and home dir "/home/admin"</span></span><br><span class="line">useradd -m admin</span><br><span class="line">passwd admin</span><br></pre></td></tr></table></figure>
+<p>这样你的邮件地址就是 <code>admin@example.com</code></p>
+<p>接下来就可以使用邮件客户端来连接啦</p>
+<p>可以使用命令 <code>netstat -apn | grep 110</code> 会看到一行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tcp    <span class="number">0</span>    <span class="number">0</span> <span class="number">0.0</span>.<span class="number">0.0</span>:<span class="number">110</span>    <span class="number">0.0</span>.<span class="number">0.0</span>:*     LISTEN     <span class="number">26719</span>/dovecot</span><br></pre></td></tr></table></figure>
+<p>POP3 服务可以正常使用了，<strong><font color="red">但是</font></strong>，只能接收邮件不能发送，SMTP 连不上，也许是因为我使用的客户端，或者我打开的方式不对…</p>
+<p><br><br></p>
+<p>以上，就完成了一个基本的邮件服务器的搭建。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>这几天需要在服务器上搭个邮件服务器，没想到还挺麻烦的。</p>
+<p>麻烦主要来自两方面，可以选择的邮件服务器软件略多(例如 qmail xmail sendmail 等等，还有转发服务，验证服务相关的，cyrus，sasl等等)，各种配置略苦。</p>
+<p>各种 Search 之后选择了 <em>Postfix</em> 和 <em>dovecot</em>，<em>Postfix</em> 是本体，<em>dovecot</em> 作为转发服务(IMAP, POP3, SMTP)。</p>]]>
+    
+    </summary>
+    
+      <category term="Linux" scheme="http://veracruz.github.io/categories/Linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[解决 gem 安装 sqlite3 失败的问题]]></title>
+    <link href="http://veracruz.github.io/2014/12/11/sqlite-problem-of-rails/"/>
+    <id>http://veracruz.github.io/2014/12/11/sqlite-problem-of-rails/</id>
+    <published>2014-12-11T03:02:14.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p>最近开始接触 <em>Ruby on Rails</em> , 刚刚新建一个工程就出现问题</p>
+<a id="more"></a>
+<p>问题的主要描述节选如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Create a new project of rails</span></span><br><span class="line">rails new blog</span><br><span class="line"></span><br><span class="line"><span class="comment">#Then it will run command 'bundle install' automatically</span></span><br><span class="line">bundle install</span><br><span class="line"></span><br><span class="line"><span class="comment">#And then a problem occured</span></span><br><span class="line">ERROR: Error installing sqlite3:</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+<p>截图如下</p>
+<img src="/images/post_image/2014_12/sqlite3_problem_of_rails.jpg">
+<p>然后尝试了一些解决办法, 以及万能的 <em>Stack Overflow</em>, 但是没有解决到. 而实际上问题很简单, 错误提示中的 <code>port install sqlite3 +universal</code> 就能搞定.</p>
+<p>之所以没有立即使用 <em>MacPorts</em>, 考虑到是否可以用管理 <em>ruby</em> 依赖的 <em>brew</em> 来解决, 但是我想多了……</p>
+<p>可以看得出这个时候是需要一个开发版的库, 所以还是要选择使用 <em>MacPorts</em> 来安装那些开源库</p>
+<p><a href="http://www.macports.org" target="_blank" rel="external">MacPorts.org</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># First of all, need to install MacPorts</span></span><br><span class="line"><span class="comment"># Get the .pkg file from 'http://www.macports.org' directly</span></span><br><span class="line"><span class="comment"># Then need to export path to PATH, default path is '/opt/local/'</span></span><br><span class="line"><span class="built_in">export</span> PATH=/opt/<span class="built_in">local</span>/bin:<span class="variable">$PATH</span></span><br><span class="line"><span class="built_in">export</span> PATH=/opt/<span class="built_in">local</span>/sbin:<span class="variable">$PATH</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Install sqlite3</span></span><br><span class="line">sudo port install sqlite3 +universal</span><br><span class="line"></span><br><span class="line"><span class="comment"># Install sqlite3 gem</span></span><br><span class="line">sudo gem install sqlite3 -- --with-opt-dir=/opt/<span class="built_in">local</span>/</span><br><span class="line"></span><br><span class="line"><span class="comment"># Go to the rails project path</span></span><br><span class="line">bundle install</span><br><span class="line"></span><br><span class="line"><span class="comment"># Preview your project</span></span><br><span class="line">sudo rails serve</span><br></pre></td></tr></table></figure>
+<p>打开浏览器 <a href="http://localhost:3000" target="_blank" rel="external">http://localhost:3000</a></p>
+<p>问题解决~~</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>最近开始接触 <em>Ruby on Rails</em> , 刚刚新建一个工程就出现问题</p>]]>
+    
+    </summary>
+    
+      <category term="Web" scheme="http://veracruz.github.io/categories/Web/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[使用CreateJS，以及遇到的一些问题]]></title>
+    <link href="http://veracruz.github.io/2014/10/31/createjs-game/"/>
+    <id>http://veracruz.github.io/2014/10/31/createjs-game/</id>
+    <published>2014-10-31T05:58:45.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p>最近由于公司要做一个微信小游戏，所以用了一点时间看了一下 <em>CreateJS</em>，写了一个很挫的小游戏，总结一下遇到的一些问题。</p>
+<a id="more"></a>
+<h3 id="关于_CreateJS">关于 <em>CreateJS</em></h3><hr>
+<p><em>CreateJS</em> 是一组JS工具集，包括 <em>EaselJS</em> <em>TweenJS</em> <em>SoundJS</em> <em>PreloadJS</em> 。</p>
+<p><a href="http://www.createjs.com" target="_blank" rel="external">CreateJS官网</a> 有很多例子，<a href="https://github.com/CreateJS" target="_blank" rel="external">CreateJS Github</a> 上 clone 下来可以研究代码。</p>
+<p>官网的文档排版很清晰，看起来会比较容易。</p>
+<p><br> <br></p>
+<h3 id="CreateJS"><em>CreateJS</em></h3><hr>
+<p>这个问题不大，注意几个地方，下面代码解释</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//绘制完成时使用，不刷新是不会显示内容的</span></span><br><span class="line">stage.update(); </span><br><span class="line"></span><br><span class="line"><span class="comment">//增加动画时需要添加的，这句事实上就是周期调用stage.update()</span></span><br><span class="line">createjs.Ticker.addEventListener(<span class="string">"tick"</span>, stage); </span><br><span class="line"></span><br><span class="line"><span class="comment">//这两句在旧的安卓浏览器上似乎不起作用，未解决</span></span><br><span class="line">stage.clear();</span><br><span class="line">stage.removeAllChildren();</span><br></pre></td></tr></table></figure>
+<p><br> <br></p>
+<h3 id="浏览器">浏览器</h3><hr>
+<p>用这个工具集写一个小游戏本身难度不大，而且写起来也很顺手，但是就是会遇到几个让我这个新手蛋疼的事情。</p>
+<ul>
+<li>浏览器单击事件的300ms延迟</li>
+<li>Size VS DPI</li>
+</ul>
+<p>300ms延迟是为了在移动设备上的双击事件，而双击事件是为了缩放</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">meta</span> <span class="attribute">name</span>=<span class="value">"viewport"</span> <span class="attribute">content</span>=<span class="value">"width=device-width,initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这句可以再安卓上的chrome浏览器解决延迟，没有了缩放也就没有了300ms，但是iOS上的safari还是不行的，最后还是用了一个叫做 <a href="https://github.com/ftlabs/fastclick" target="_blank" rel="external"><em>FastClick</em></a> 的JS库，顺利解决。</p>
+<p>但是由此引出一个新的问题，当<code>width=device-width</code>的时候，用 <code>document.documentElement.clientWidth</code> 和 <code>document.documentElement.clientHeight</code> 获取的值不是实际的像素值。例如Retina屏，@2x实际上是2个点，所以我们可以这样设置。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">canvas</span> <span class="attribute">id</span>=<span class="value">"testCanvas"</span> <span class="attribute">width</span>=<span class="value">"640"</span> <span class="attribute">height</span>=<span class="value">"1136"</span> <span class="attribute">style</span>=<span class="value">"width: 320px; height: 568px;"</span>&gt;</span><span class="tag">&lt;/<span class="title">canvas</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>标签属性包含了实际的像素值，css的设置控制了他显示的大小，问题解决</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>最近由于公司要做一个微信小游戏，所以用了一点时间看了一下 <em>CreateJS</em>，写了一个很挫的小游戏，总结一下遇到的一些问题。</p>]]>
+    
+    </summary>
+    
+      <category term="Web" scheme="http://veracruz.github.io/categories/Web/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[关于提升 Octopress 的加载速度]]></title>
+    <link href="http://veracruz.github.io/2014/07/18/octopress-simprove-loading-rate/"/>
+    <id>http://veracruz.github.io/2014/07/18/octopress-simprove-loading-rate/</id>
+    <published>2014-07-18T07:46:47.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p>在 <code>/source/_includes/custom/head.html</code> 注释掉两句下载Google font的link标签，另外就是尽量不要使用站外的资源，可以查看各个文件中引用外部的资源的语句，在国内可以大幅度提高加载速度。</p>
+<p>另外在 <code>/source/_includes/head.html</code> 中还有坑爹的用 Google 的 jquery cdn，明明本地有，所以果断改为本地的 <code>/javascripts/libs/jquery.min.js</code> 即可。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>在 <code>/source/_includes/custom/head.html</code> 注释掉两句下载Google font的link标签，另外就是尽量不要使用站外的资源，可以查看各个文件中引用外部的资源的语句，在国内可以大幅度提高加载速度。</p>
+<p>另外]]>
+    </summary>
+    
+      <category term="Blog Relations" scheme="http://veracruz.github.io/categories/Blog-Relations/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[使用 Facebook 的 pop 开源动画库做顺畅的2D动画]]></title>
+    <link href="http://veracruz.github.io/2014/07/18/use-facebookpop/"/>
+    <id>http://veracruz.github.io/2014/07/18/use-facebookpop/</id>
+    <published>2014-07-18T07:15:58.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p><em>pop</em> 是 <em>Facebook</em> 的在 <em>Paper</em> 中使用的动画库，开源之后非常受欢迎，它是一个成熟且经过良好测试的框架，使用它可以做出顺畅的2D动画。</p>
+<a id="more"></a>
+<p><em>pop</em> 的理念是一切即可动画，你不仅仅可以在一个view或者layer上做动画，它是直接在 <code>NSObject</code> 做了扩展，任意一个继承于 <code>NSObject</code> 的对象都可以添加一个动画。</p>
+<p>在 <a href="https://github.com/maxmyers/FacebookPop" target="_blank" rel="external">5 Steps For Using Facebook Pop</a> 上有一个很好的使用方法说明，官方 Repo 在这里 <a href="https://github.com/facebook/pop" target="_blank" rel="external">facebook/pop</a>。</p>
+<p>在 <em>pop</em> 中有三种是直接应用于view和layer,分别是 <code>POPBasicAnimation</code> <code>POPSpringAnimation</code> <code>POPDecayAnimation</code>，分别对应，基本动画、弹性动画、衰减动画。有一个非常好的示例程序，github上的 <a href="https://github.com/schneiderandre/popping" target="_blank" rel="external">poping</a> 库。<br>在CocoaChina上有一篇好的文章 <a href="http://www.cocoachina.com/applenews/devnews/2014/0527/8565.html" target="_blank" rel="external">Facebook Pop 使用指南</a>。</p>
+<p>关于在导入库的时候，使用cocoapods是很方便的，但是如果使用复制的方式导入的话，则会遇到找不到头文件的问题，这里使用正则表达式把所有的头文件引用都替换。</p>
+<p><code>Find -&gt; Find and Replace in Project</code></p>
+<p>然后左边就会出现替换的对话，然后在左边栏上部选择 <code>Regular Expression</code>，接下来查找框中输入 <code>&lt;POP/([a-zA-Z.]+)&gt;</code>，替换框中输入 <code>&quot;$1&quot;</code>，然后preview，确定替换替换正确，然后确定即可编译成功。</p>
+<p>这里说一点需要注意的地方，根据动画的类型不同，这三个属性 <code>velocity</code> <code>fromValue</code> <code>toValue</code> 必须是同一类型，例如</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POPDecayAnimation *animation = [POPDecayAnimation animationWithPropertyNamed:kPOPViewCenter];</span><br><span class="line">animation<span class="variable">.velocity</span> = [<span class="built_in">NSValue</span> valueWith<span class="built_in">CGPoint</span>:<span class="built_in">CGPointMake</span>(<span class="number">100</span>, <span class="number">100</span>)];</span><br><span class="line">animation<span class="variable">.name</span> = <span class="string">@"spring to center"</span>;</span><br><span class="line"><span class="built_in">UIView</span> *view = [[<span class="built_in">UIView</span> alloc] initWithFrame:<span class="built_in">CGRectMake</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">100</span>, <span class="number">100</span>)];</span><br><span class="line">view<span class="variable">.center</span> = <span class="keyword">self</span><span class="variable">.view</span><span class="variable">.center</span>;</span><br><span class="line">view<span class="variable">.backgroundColor</span> = [<span class="built_in">UIColor</span> blueColor];</span><br><span class="line">[<span class="keyword">self</span><span class="variable">.view</span> addSubview:view];</span><br><span class="line">[view pop_addAnimation:animation forKey:<span class="string">@"decay"</span>];</span><br></pre></td></tr></table></figure>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><em>pop</em> 是 <em>Facebook</em> 的在 <em>Paper</em> 中使用的动画库，开源之后非常受欢迎，它是一个成熟且经过良好测试的框架，使用它可以做出顺畅的2D动画。</p>]]>
+    
+    </summary>
+    
+      <category term="iOS" scheme="http://veracruz.github.io/categories/iOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Core Animation 中的3D变换以及简单应用]]></title>
+    <link href="http://veracruz.github.io/2014/07/17/core-animation/"/>
+    <id>http://veracruz.github.io/2014/07/17/core-animation/</id>
+    <published>2014-07-17T14:36:21.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p>本篇介绍iOS中的 <em>Core Animation</em> 的3D变换，<em>CATransform3D</em> 矩阵变换。</p>
+<a id="more"></a>
+<p><em>Core Animation</em> 是iOS中自带的动画框架，它包含了一些常用的变换和动画，旋转、缩放、平移、透视等。平面的动画有 <em>facebook</em> 的 <em>pop</em> 开源框架，下一篇讲介绍。三维的框架有 <em>Unity3D</em>，通常用CA做一个3D的动画还是很繁琐的，iOS上的 <em>OpenGL ES</em> 可能更科学。</p>
+<p>这个层面已经涉及到一些计算机图形学的知识，这里只说明基本的意义。</p>
+<p>首先，通过查看 <em>CATransform3D</em> 的定义可以知道，这是一个三维齐次变换矩阵。</p>
+<p>左上到右下的对角线是1，而其他的都为0的时候，就是 <code>CATransform3DIdentity</code> 变换，即恒等变换。一般的常用变换，CA都给出了一些C函数，例如 <code>CATransform3DRotate()</code>。</p>
+<p>这些操作都是在一个layer上，<code>layer.anchorPoint</code> 这个属性会影响到一些变换，比如旋转的轴。</p>
+<p>这里提一下iOS中坐标系的问题，CA中用的是左手坐标系，x轴正方向向右，y轴正方向向下，z轴正方向垂直于屏幕向上，也就是朝着用户的方向。所以这里，旋转的正方向就是顺时针，而旋转的角度的范围事实上为-180到180，所以如果使用变换来做动画，则使用 <code>CAKeyFrameAnimation</code> 来实现超过180度的旋转动画，而使用keypath的方式就不需要。</p>
+<p>在做animation的时候，使用 <code>CABasicAnimation</code> 用 <em>keypath</em> 来添加动画，这里有一个非官方的不完整列表，官方似乎并未提供完整列表。转载自<a href="http://www.cnblogs.com/pengyingh/articles/2379631.html" target="_blank" rel="external">CABasicAnimation animationWithKeyPath 一些规定的值</a></p>
+<ul>
+<li>sublayerTransform</li>
+<li>transform</li>
+<li>rotation</li>
+<li>scale</li>
+<li>translation</li>
+<li>opacity</li>
+<li>margin</li>
+<li>zPosition</li>
+<li>backgroundColor</li>
+<li>cornerRadius</li>
+<li>borderWidth</li>
+<li>bounds</li>
+<li>contents</li>
+<li>contentsRect</li>
+<li>cornerRadius</li>
+<li>frame</li>
+<li>hidden</li>
+<li>mask</li>
+<li>masksToBounds</li>
+<li>opacity</li>
+<li>position</li>
+<li>shadowColor</li>
+<li>shadowOffset</li>
+<li>shadowOpacity</li>
+<li>shadowRadius</li>
+</ul>
+<p>其中有一些是可以用 <code>.</code> 来连接子属性的，例如 <code>rotation.x</code>。</p>
+<p>有一个简单明了的示例是Mgen的一个旋转立方体，我这里给出 <code>ViewController.m</code> 的完整代码和我增加的几条注释，转载自<a href="http://www.mgenware.com/blog/?p=498" target="_blank" rel="external">iOS CALayer和3D (1): 定义一个简单的旋转3D立方体</a>。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  ViewController.m</span></span><br><span class="line"><span class="comment">//  CALayer_3DCube_from_Mgen_Blog</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by Veracruz on 14-7-17.</span></span><br><span class="line"><span class="comment">//  Copyright (c) 2014年 Veracruz. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#import <span class="title">"ViewController.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">strong</span>, <span class="keyword">nonatomic</span>) <span class="built_in">CALayer</span> *rootLayer; <span class="comment">//主layer，这里应理解为一个放置layer的舞台</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad</span><br><span class="line">&#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidLoad];</span><br><span class="line">	<span class="comment">// Do any additional setup after loading the view, typically from a nib.</span></span><br><span class="line">    </span><br><span class="line">    _rootLayer = [<span class="built_in">CALayer</span> layer];</span><br><span class="line">    _rootLayer<span class="variable">.contentsScale</span> = [<span class="built_in">UIScreen</span> mainScreen]<span class="variable">.scale</span>;</span><br><span class="line">    _rootLayer<span class="variable">.frame</span> =<span class="keyword">self</span><span class="variable">.view</span><span class="variable">.bounds</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//前</span></span><br><span class="line">    [<span class="keyword">self</span> addLayer:@[@<span class="number">0</span>, @<span class="number">0</span>, @<span class="number">50</span>, @<span class="number">0</span>, @<span class="number">0</span>, @<span class="number">0</span>, @<span class="number">0</span>]];</span><br><span class="line">    <span class="comment">//后</span></span><br><span class="line">    [<span class="keyword">self</span> addLayer:@[@<span class="number">0</span>, @<span class="number">0</span>, @(-<span class="number">50</span>), @(M_PI), @<span class="number">0</span>, @<span class="number">0</span>, @<span class="number">0</span>]];</span><br><span class="line">    <span class="comment">//左</span></span><br><span class="line">    [<span class="keyword">self</span> addLayer:@[@(-<span class="number">50</span>), @<span class="number">0</span>, @<span class="number">0</span>, @(-M_PI_2), @<span class="number">0</span>, @<span class="number">1</span>, @<span class="number">0</span>]];</span><br><span class="line">    <span class="comment">//右</span></span><br><span class="line">    [<span class="keyword">self</span> addLayer:@[@<span class="number">50</span>, @<span class="number">0</span>, @<span class="number">0</span>, @(M_PI_2), @<span class="number">0</span>, @<span class="number">1</span>, @<span class="number">0</span>]];</span><br><span class="line">    <span class="comment">//上</span></span><br><span class="line">    [<span class="keyword">self</span> addLayer:@[@<span class="number">0</span>, @(-<span class="number">50</span>), @<span class="number">0</span>, @(-M_PI_2), @<span class="number">1</span>, @<span class="number">0</span>, @<span class="number">0</span>]];</span><br><span class="line">    <span class="comment">//下</span></span><br><span class="line">    [<span class="keyword">self</span> addLayer:@[@<span class="number">0</span>, @<span class="number">50</span>, @<span class="number">0</span>, @(M_PI_2), @<span class="number">1</span>, @<span class="number">0</span>, @<span class="number">0</span>]];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//主Layer的3D变换</span></span><br><span class="line">    <span class="built_in">CATransform3D</span> transform = <span class="built_in">CATransform3DIdentity</span>;</span><br><span class="line">    <span class="comment">//这是做了一个透视</span></span><br><span class="line">    transform<span class="variable">.m34</span> = -<span class="number">1.0</span> / <span class="number">700</span>;</span><br><span class="line">    <span class="comment">//在X轴上做一个20度的小旋转</span></span><br><span class="line">    transform = <span class="built_in">CATransform3DRotate</span>(transform, M_PI / <span class="number">9</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">//设置CALayer的sublayerTransform</span></span><br><span class="line">    _rootLayer<span class="variable">.sublayerTransform</span> = transform;</span><br><span class="line">    <span class="comment">//添加Layer</span></span><br><span class="line">    [<span class="keyword">self</span><span class="variable">.view</span><span class="variable">.layer</span> addSublayer:_rootLayer];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//动画</span></span><br><span class="line">    <span class="built_in">CABasicAnimation</span> *animation = [<span class="built_in">CABasicAnimation</span> animationWithKeyPath:<span class="string">@"sublayerTransform.rotation.y"</span>];</span><br><span class="line">    <span class="comment">//从0到360度</span></span><br><span class="line">    animation<span class="variable">.toValue</span> = [<span class="built_in">NSNumber</span> numberWithFloat:<span class="number">2</span> * M_PI];</span><br><span class="line">    <span class="comment">//间隔3秒</span></span><br><span class="line">    animation<span class="variable">.duration</span> = <span class="number">3.0</span>;</span><br><span class="line">    <span class="comment">//无限循环</span></span><br><span class="line">    animation<span class="variable">.repeatCount</span> = HUGE_VALF;</span><br><span class="line">    <span class="comment">//开始动画</span></span><br><span class="line">    [_rootLayer addAnimation:animation forKey:<span class="string">@"rotation"</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)addLayer:(<span class="built_in">NSArray</span> *)params</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//可以渐变颜色的layer</span></span><br><span class="line">    <span class="built_in">CAGradientLayer</span> *gradientLayer = [<span class="built_in">CAGradientLayer</span> layer];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//这句似乎在有内容的时候才是必须的</span></span><br><span class="line">    gradientLayer<span class="variable">.contentsScale</span> = [<span class="built_in">UIScreen</span> mainScreen]<span class="variable">.scale</span>;</span><br><span class="line">    </span><br><span class="line">    gradientLayer<span class="variable">.bounds</span> = <span class="built_in">CGRectMake</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">100</span>, <span class="number">100</span>);</span><br><span class="line">    gradientLayer<span class="variable">.position</span> = <span class="keyword">self</span><span class="variable">.view</span><span class="variable">.center</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//设置渐变的颜色序列</span></span><br><span class="line">    gradientLayer<span class="variable">.colors</span> = @[(<span class="keyword">id</span>)[<span class="built_in">UIColor</span> grayColor]<span class="variable">.CGColor</span>,</span><br><span class="line">                             (<span class="keyword">id</span>)[<span class="built_in">UIColor</span> blackColor]<span class="variable">.CGColor</span>];</span><br><span class="line">    <span class="comment">//设置每个颜色起始的比例位置</span></span><br><span class="line">    gradientLayer<span class="variable">.locations</span> = @[@<span class="number">0</span>, @<span class="number">1</span>];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//两个点的连线就是渐变的方向</span></span><br><span class="line">    gradientLayer<span class="variable">.startPoint</span> = <span class="built_in">CGPointMake</span>(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    gradientLayer<span class="variable">.startPoint</span> = <span class="built_in">CGPointMake</span>(<span class="number">0</span>, <span class="number">1</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">CATransform3D</span> transform =</span><br><span class="line">        <span class="built_in">CATransform3DMakeTranslation</span>([[params objectAtIndex:<span class="number">0</span>] floatValue],</span><br><span class="line">                                     [[params objectAtIndex:<span class="number">1</span>] floatValue],</span><br><span class="line">                                     [[params objectAtIndex:<span class="number">2</span>] floatValue]);</span><br><span class="line">    transform =</span><br><span class="line">        <span class="built_in">CATransform3DRotate</span>(transform,</span><br><span class="line">                            [[params objectAtIndex:<span class="number">3</span>] floatValue],</span><br><span class="line">                            [[params objectAtIndex:<span class="number">4</span>] floatValue],</span><br><span class="line">                            [[params objectAtIndex:<span class="number">5</span>] floatValue],</span><br><span class="line">                            [[params objectAtIndex:<span class="number">6</span>] floatValue]);</span><br><span class="line">    </span><br><span class="line">    gradientLayer<span class="variable">.transform</span> = transform;</span><br><span class="line">    </span><br><span class="line">    [_rootLayer addSublayer:gradientLayer];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)didReceiveMemoryWarning</span><br><span class="line">&#123;</span><br><span class="line">    [<span class="keyword">super</span> didReceiveMemoryWarning];</span><br><span class="line">    <span class="comment">// Dispose of any resources that can be recreated.</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>上面代码实现了一个立方体的旋转动画，通过这段代码即可了解CA中的变换和动画的一些用法。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>本篇介绍iOS中的 <em>Core Animation</em> 的3D变换，<em>CATransform3D</em> 矩阵变换。</p>]]>
+    
+    </summary>
+    
+      <category term="iOS" scheme="http://veracruz.github.io/categories/iOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[AFNetworking & ASIHTTPRequest 的初步使用方法]]></title>
+    <link href="http://veracruz.github.io/2014/07/16/afnetworking-and-asihttprequest/"/>
+    <id>http://veracruz.github.io/2014/07/16/afnetworking-and-asihttprequest/</id>
+    <published>2014-07-16T05:54:07.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p>总结一下 <em>AFNetworking</em> 和 <em>ASIHTTPRequest</em> 两个网络库的基本使用以及一些问题</p>
+<a id="more"></a>
+<p>首先到 <em>github</em> 下载这两个库，<em>ASIHTTPRequest</em> 从2011年就停止更新了，写这篇文章的时候 <em>AFNetworking</em> 的版本是 <code>2.3.1</code>。</p>
+<p>当前使用的环境是</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Mac OS X <span class="number">10.9</span><span class="number">.4</span></span><br><span class="line">Xcode <span class="number">5.1</span><span class="number">.1</span></span><br><span class="line">iOS <span class="number">7.1</span></span><br></pre></td></tr></table></figure>
+<p>下面是两个库的地址</p>
+<p><code>https://github.com/pokeb/asi-http-request</code></p>
+<p><code>https://github.com/AFNetworking/AFNetworking</code></p>
+<p>这两个库都封装了网络的一些操作，可以方便的进行各种Request，包含一些高级的功能，另外还有一个库MKNetworking可以选择，下面有一个对比的表格，转载自 <a href="http://www.cnblogs.com/snake-hand/p/3177938.html" target="_blank" rel="external">AFNetworking、MKNetworkKit和ASIHTTPRequest对比</a></p>
+<table class="ynote_table" style="border-width: 1px; border-style: solid; border-color: #999999; border-collapse: collapse; margin: 6px auto; width: 100%;" border="1" cellspacing="0" cellpadding="2"><br><tbody><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>&nbsp;</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>AFNetworking</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>MKNetworkKit</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">ASIHTTPRequest</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">更新情况</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">维护和使用者相对多</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">维护和使用者相对少</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">停止更新</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>支持iOS和OSX</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>是</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>是</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>ARC</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>是</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>是</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>断点续传</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><span style="font-size: 12px; line-height: 18px;">否，可通过</span><span style="font-size: 12px; line-height: 18px;">AFDownloadRequestOperation</span></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">同步异步请求</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">只支持异步</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>图片缓存到本地</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>否，通过SDURLCache或AFCache</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>否</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>图片缓存到内存</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top"><br><div>是</div><br></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">后台下载</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">下载进度</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否，可通过AFDownloadRequestOperation</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">缓存离线请求</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否，<span style="font-size: 12px; line-height: 18px;">通过SDURLCache或AFCache</span></td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br></tr><br><tr><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">JSON、XML</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">是</td><br><td style="word-break: break-all; border: #999999 1px solid;" valign="top">否</td><br></tr><br></tbody><br></table>
+
+<p><br><br><br></p>
+<h2 id="AFNetworking">AFNetworking</h2><p>这个框架现在的版本和以前的用法有一些区别，而且有一些设置比较隐蔽。其中扩展了一些系统的UI类，可以非常方便的使用UIProgressView、UIImageView等实现进度条，图片加载等功能。</p>
+<p><br><br></p>
+<h3 id="导入库">导入库</h3><hr>
+<p>只要将下载之后的目录下的 <code>AFNetworking</code> 和 <code>UIKit+AFNetworking</code> 两个文件夹导入到工程即可，并且不需要添加其他框架。</p>
+<p><br><br></p>
+<h3 id="GET请求并解析JSON">GET请求并解析JSON</h3><hr>
+<p>它有自己的管理类，这种请求非常简单明了，会直接解析JSON到一个 <code>NSDictionary</code>，当然前提是返回的响应是很规范的，可是很多时候并不是这样。这种请求方式要求响应头中的 <code>Content-type</code> 字段的值必须是 <code>text/json</code>，也就是<code>Content-type: text/json</code>。很多时候返回的响应头这个字段的值是 <code>text/html</code>, 这个时候这个库就会返回一个错误。当然错误格式的JSON数据也会返回错误。下面是调用的代码段.</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];</span><br><span class="line">    </span><br><span class="line"><span class="comment">//设置支持所有的MIME格式，略隐蔽的设置选项</span></span><br><span class="line">manager<span class="variable">.responseSerializer</span><span class="variable">.acceptableContentTypes</span> = <span class="literal">nil</span>;</span><br><span class="line">    </span><br><span class="line">[manager GET:JSON_URL parameters:<span class="literal">nil</span> success:^(AFHTTPRequestOperation *operation, <span class="keyword">id</span> responseObject) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@ : "</span>, [responseObject class], responseObject);</span><br><span class="line">    &#125; failure:^(AFHTTPRequestOperation *operation, <span class="built_in">NSError</span> *error) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"error : %@"</span>, error);</span><br><span class="line">    &#125;];</span><br></pre></td></tr></table></figure>
+<p><br><br></p>
+<h3 id="通用请求">通用请求</h3><hr>
+<p>这个库提供了响应的序列化器(serializer)，就是解析器，这个可以自己定制，如果不指定则不会解析，仅接收原始数据在block的参数 <code>responseObject</code> 中。<code>operation</code>有很多有用的属性，例如<code>operation.response.allHeaderFields</code> 可以查看完整的响应头。下面这段代码指定了XML的序列化器。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSURLRequest</span> *request = [<span class="built_in">NSURLRequest</span> requestWithURL:[<span class="built_in">NSURL</span> URLWithString:SOME_URL]];</span><br><span class="line">AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];</span><br><span class="line">    </span><br><span class="line"><span class="comment">//指定序列化器</span></span><br><span class="line">operation<span class="variable">.responseSerializer</span> = [AFXMLParserResponseSerializer serializer];</span><br><span class="line">    </span><br><span class="line">[operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, <span class="keyword">id</span> responseObject) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@ : "</span>, [responseObject class], responseObject);</span><br><span class="line">    &#125; failure:^(AFHTTPRequestOperation *operation, <span class="built_in">NSError</span> *error) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"error : %@"</span>, error);</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">[[<span class="built_in">NSOperationQueue</span> mainQueue] addOperation:operation];</span><br><span class="line">```从上面的代码的输出可以看到，它使用了iOS自带的XML解析器。</span><br><span class="line"><span class="preprocessor">### 文件下载保存</span></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">下面的代码很方便的实现了一个文件的下载。</span><br><span class="line">```objectivec </span><br><span class="line">AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:[<span class="built_in">NSURLSessionConfiguration</span> defaultSessionConfiguration]];</span><br><span class="line"><span class="built_in">NSURLRequest</span> *request = [<span class="built_in">NSURLRequest</span> requestWithURL:[<span class="built_in">NSURL</span> URLWithString:FILE_URL]];</span><br><span class="line">    </span><br><span class="line"><span class="built_in">NSURLSessionDownloadTask</span> *task = [manager downloadTaskWithRequest:request progress:<span class="literal">nil</span> destination:^<span class="built_in">NSURL</span> *(<span class="built_in">NSURL</span> *targetPath, <span class="built_in">NSURLResponse</span> *response)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="built_in">NSURL</span> *documentURL = [[<span class="built_in">NSFileManager</span> defaultManager] URLForDirectory:<span class="built_in">NSDocumentDirectory</span> inDomain:<span class="built_in">NSUserDomainMask</span> appropriateForURL:<span class="literal">nil</span> create:<span class="literal">NO</span> error:<span class="literal">nil</span>];</span><br><span class="line">    <span class="keyword">return</span> [documentURL URLByAppendingPathComponent:FILE_NAME];</span><br><span class="line">    &#125; completionHandler:^(<span class="built_in">NSURLResponse</span> *response, <span class="built_in">NSURL</span> *filePath, <span class="built_in">NSError</span> *error)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"error : %@"</span>, error);</span><br><span class="line">    &#125;];</span><br><span class="line"></span><br><span class="line"><span class="comment">//不要忘记开始任务</span></span><br><span class="line">[task resume];</span><br></pre></td></tr></table></figure>
+<p><br><br><br></p>
+<h2 id="ASIHTTPRequest">ASIHTTPRequest</h2><p>这个停止更新很久的库使用的是MRC，并且在新的系统中使用可能会遇到一些问题，但确实一个很好地库，支持断点续传、缓存、身份验证等等。</p>
+<p><br><br></p>
+<h3 id="导入库-1">导入库</h3><hr>
+<p>下载库之后，将目录下的 <code>Classes</code> 和 <code>External</code> 文件夹导入到项目中，这并不是完整的导入，它的单元测试模块的一些文件并不包含在这个目录中，需要用 <em>ruby</em> 相关的命令来导入。这里只需要删除 <code>Classes</code> 目录下的 <code>Test</code> 删除即可。</p>
+<p><br><br></p>
+<p>###项目设置</p>
+<hr>
+<p>需要添加以下框架和库</p>
+<p><code>CFNetworking.framework</code><br><code>SystemConfiguration.framework</code><br><code>MobileCoreServices.framework</code><br><code>libz.dylib</code><br><code>libxml2.dylib</code></p>
+<p>还要在项目的 <code>Build Settings</code> 中的 <code>Header Search Paths</code> 字段中添加 <code>/usr/include/libxml2/</code>。</p>
+<p>如果项目是ARC，请在这个库的所有文件添加标签 <code>-fnobjectivec-arc</code>，在 <code>Build Phases</code> 中的 <code>Compile Sources</code>。或者也可以把项目改成mrc而你自己创建的文件添加标签 <code>-fobjectivec-arc</code>。</p>
+<p>另外在64位的iOS系统下会有很多类型警告，按照推荐的修改即可。</p>
+<p><br><br></p>
+<h3 id="数据请求">数据请求</h3><hr>
+<p>有同步和异步请求，同步的意义不大，这里给出异步请求。请求的处理有两种方式，一种是代理，一种是 <code>block</code>。下面给出 <code>block</code> 方式的，代理方式在 <code>ASIHTTPRequestDelegate</code> 的文件中的定义很容易理解。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSURL</span> *url = [<span class="built_in">NSURL</span> URLWithString:SOME_URL];</span><br><span class="line">    </span><br><span class="line"><span class="comment">//使用__weak来防止使用block出现的retain循环</span></span><br><span class="line">__<span class="keyword">weak</span> ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];</span><br><span class="line">    </span><br><span class="line"><span class="comment">//使用代理方式则添加下面这句</span></span><br><span class="line"><span class="comment">//request.delegate = self;</span></span><br><span class="line">    </span><br><span class="line">[request setCompletionBlock:^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>, request<span class="variable">.responseString</span>);</span><br><span class="line">    &#125;];</span><br><span class="line">[request setFailedBlock:^&#123;</span><br><span class="line">	<span class="built_in">NSLog</span>(<span class="string">@"%@"</span>, request<span class="variable">.error</span>);</span><br><span class="line">    &#125;];</span><br><span class="line">[request startAsynchronous];</span><br></pre></td></tr></table></figure>
+<p><br><br></p>
+<h3 id="文件下载缓存">文件下载缓存</h3><hr>
+<p>支持多种缓存策略，这里使用永久缓存的策略。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSURL</span> *url = [<span class="built_in">NSURL</span> URLWithString:FILE_URL];</span><br><span class="line">__<span class="keyword">weak</span> ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];</span><br><span class="line">    </span><br><span class="line">request<span class="variable">.downloadCache</span> = [ASIDownloadCache sharedCache];</span><br><span class="line">    </span><br><span class="line"><span class="comment">//指定缓存策略</span></span><br><span class="line">request<span class="variable">.cachePolicy</span> = ASIOnlyLoadIfNotCachedCachePolicy;</span><br><span class="line">    </span><br><span class="line">[request setCompletionBlock:^&#123;</span><br><span class="line">    [request<span class="variable">.responseData</span> writeToFile:LO<span class="built_in">CAL_FILE_URL</span> atomically:<span class="literal">YES</span>];</span><br><span class="line">    &#125;];</span><br><span class="line">[request setFailedBlock:^&#123;</span><br><span class="line">  	<span class="built_in">NSLog</span>(<span class="string">@"%@"</span>, request<span class="variable">.error</span>);</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">[request startAsynchronous];</span><br></pre></td></tr></table></figure>
+<p>下载任务是支持进度显示的，需要用一个UIProgressView代理，和设置显示精确进度，下面两句</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">request<span class="variable">.showAccurateProgress</span> = <span class="literal">YES</span>;</span><br><span class="line">request<span class="variable">.downloadProgressDelegate</span> = progressView;</span><br></pre></td></tr></table></figure>
+<h2 id="—">—</h2><p><br><br></p>
+<p>以上就是两个库的基本用法，还有一些上传数据，身份验证等等点击下面的参考资料中的链接查看。</p>
+<p><br><br><br><br></p>
+<h4 id="参考资料">参考资料</h4><hr>
+<ol>
+<li><a href="http://mobile.51cto.com/iphone-405168.htm" target="_blank" rel="external">专题：iOS教程之ASIHttpRequest完全攻略</a></li>
+<li><a href="http://allseeing-i.com/ASIHTTPRequest/How-to-use" target="_blank" rel="external">ASIHTTPRequest 官方文档</a></li>
+<li><a href="http://cocoadocs.org/docsets/AFNetworking/2.3.1/index.html" target="_blank" rel="external">AFNetworking 官方文档</a></li>
+</ol>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>总结一下 <em>AFNetworking</em> 和 <em>ASIHTTPRequest</em> 两个网络库的基本使用以及一些问题</p>]]>
+    
+    </summary>
+    
+      <category term="iOS" scheme="http://veracruz.github.io/categories/iOS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[使用Github + Octopress建立博客]]></title>
+    <link href="http://veracruz.github.io/2014/07/14/how-to-create-your-own-blog-on-github-pages/"/>
+    <id>http://veracruz.github.io/2014/07/14/how-to-create-your-own-blog-on-github-pages/</id>
+    <published>2014-07-14T06:50:09.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p>学习研究的过程需要不断地总结，没有总结的学习会很快丢失那些记忆，建立一个博客是个很好的方法。</p>
+<p>在 <em><a href="http://github.com/" target="_blank" rel="external">Github</a></em> 上建立博客的好处是，不需要去申请域名去租用一个空间，而且建立的过程可以学到很多东西。</p>
+<p>接下来总结一下使用 <em>GitHub Pages</em> 提供的托管服务的静态博客的建立流程以及一些问题。</p>
+<p>以下操作环境都是在Mac中，不在Mac下可能会有不少差别，需要手动安装Git、ruby等等。</p>
+<a id="more"></a>
+<p><br><br><br></p>
+<h3 id="申请一个_GitHub_账号"><font color="330000">申请一个 <em>GitHub</em> 账号</font></h3><hr>
+<p>首先需要一个 <em>GitHub</em> 的账号，这个Coder通常都有，进入 <em><a href="http://github.com/" target="_blank" rel="external">Github</a></em> ，首页就可以快速的注册一个账号。</p>
+<p><br><br><br></p>
+<h3 id="建立一个新的仓库(Repository)"><font color="330000">建立一个新的仓库(Repository)</font></h3><hr>
+<p>登录之后点击网页的右上角的加号可以快速建立一个Repo，建立的Repo名称格式需要是<code>your_username.github.io</code>，建立时不用初始化。</p>
+<p><br><br><br></p>
+<h3 id="安装_Octopress_以及所需依赖"><font color="330000">安装 <em>Octopress</em> 以及所需依赖</font></h3><hr>
+<p><em>Octopress</em> 是一个静态的博客系统，而它是基于 <em>jekyll</em>，一个静态blog生成工具。这是一套很好的方案，并且有很多人在用。</p>
+<p>clone 一份 <em>Octopress</em> 到本地，注意整理好路径</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> git://github.com/imathis/octopress.git octopress</span><br><span class="line"><span class="built_in">cd</span> octopress</span><br></pre></td></tr></table></figure>
+<p>然后安装一些依赖</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo gem install bundler    <span class="comment">#这句需要root权限，所以需要在前面添加sudo</span></span><br><span class="line">rbenv <span class="built_in">rehash</span>	              <span class="comment">#没有安装rbenv，这句可省</span></span><br><span class="line">bundle install</span><br></pre></td></tr></table></figure>
+<p>执行上面最后一句的时候可能会收到类似的错误<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Gem::RemoteFetcher::FetchError: Errno::ECONNRESET: Connection reset by peer - SSL_connect (https://rubygems.org/gems/chunky_png-<span class="number">1.3</span>.<span class="number">1</span>.gem)</span><br><span class="line">An error occurred <span class="keyword">while</span> installing chunky_png (<span class="number">1.3</span>.<span class="number">1</span>), and Bundler cannot continue.</span><br><span class="line">Make sure that `gem install chunky_png -v <span class="string">'1.3.1'</span>` succeeds before bundling.</span><br></pre></td></tr></table></figure></p>
+<p>这个时候要修改 <code>Gemfile</code> 中第一行的地址为 <code>http://ruby.taobao.org</code> 即可</p>
+<p>安装 <em>Octopress</em> 的默认主题</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rake install</span><br></pre></td></tr></table></figure>
+<p>这个过程可能需要一段时间，命令<code>gem</code>你可以使用<code>-V</code>参数来监视完整的输出，另外如果速度过慢，或者失败的话，可以替换<code>gem</code>的源为<code>http://ruby.taobo.org/</code>，命令如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gem sources -r https://rubygems.org/</span><br><span class="line">gem sources <span class="operator">-a</span> http://ruby.taobao.org/    <span class="comment">#这里可能需要一些时间</span></span><br><span class="line">gem sources <span class="operator">-l</span>                            <span class="comment">#查看当前源，保证当前源是只有一个的</span></span><br></pre></td></tr></table></figure>
+<p><br><br><br></p>
+<h3 id="配置并部署_Octopress"><font color="330000">配置并部署 Octopress</font></h3><hr>
+<p>执行下面语句来设置 <em>GitHub Pages</em></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rake setup_github_pages</span><br></pre></td></tr></table></figure>
+<p>这个过程会要求在 <em>GitHub</em> 上建立的Repo的地址</p>
+<p><code>SSH</code> 地址</p>
+<p><code>git@github.com:username/username.github.io.git</code></p>
+<p>或者 <code>HTTPS</code> 地址</p>
+<p><code>https://github.com/your_username/your_username.github.io.git</code></p>
+<p>会有以下的操作，引用自 <a href="http://octopress.org/docs/deploying/github/]" target="_blank" rel="external">Octopress官方文档</a></p>
+<blockquote>
+<ul>
+<li>Ask for and store your Github Pages repository url.</li>
+<li>Rename the remote pointing to imathis/octopress from ‘origin’ to ‘octopress’</li>
+<li>Add your Github Pages repository as the default origin remote.</li>
+<li>Switch the active branch from master to source.</li>
+<li>Configure your blog’s url according to your repository.</li>
+<li>Setup a master branch in the _deploy directory for deployment.</li>
+</ul>
+</blockquote>
+<p>接下来</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rake generate</span><br><span class="line">rake deploy</span><br></pre></td></tr></table></figure>
+<p>执行后会生成静态博客，并将生成的文件复制到 <code>_deploy/</code> 目录下，<code>add</code>到git，然后<code>commit</code> &amp; <code>push</code> 到 <code>master branch</code>。打开 <code>http://your_userrname.github.io/</code> 就可以看到新建的博客了。</p>
+<p>注意把源代码 <code>push</code> 到 <code>source branch</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">'your message'</span></span><br><span class="line">git push origin <span class="built_in">source</span></span><br></pre></td></tr></table></figure>
+<p>关于博客的设置一般在 <code>_config.yml</code> 文件中，具体内容参照官方说明 <a href="http://octopress.org/docs/configuring" target="_blank" rel="external">Configure your blog</a>。</p>
+<p><br><br><br></p>
+<h3 id="开始撰写博客"><font color="330000">开始撰写博客</font></h3><hr>
+<p>博客的每个post都在 <code>source/_post</code> 目录下，文件名的按照 <em>jekyll</em> 的建议命名方式 <code>YYYY-MM-DD-post-title.markdown</code>。</p>
+<p>简单的建立方式是利用下面的命令</p>
+<h4 id="Syntax">Syntax</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rake new_post[<span class="string">"title"</span>]</span><br></pre></td></tr></table></figure>
+<p>它会按照上面所说的方式命名文件，扩展名为 <code>markdown</code>，这个可以再 <code>Rakefile</code> 中设置。还会在文件中加入 <em>yaml</em> 的头部。</p>
+<p>还可以添加新的页面</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">rake new_page[super-awesome]</span><br><span class="line"><span class="comment"># creates /source/super-awesome/index.markdown</span></span><br><span class="line"></span><br><span class="line">rake new_page[super-awesome/page.html]</span><br><span class="line"><span class="comment"># creates /source/super-awesome/page.html</span></span><br></pre></td></tr></table></figure>
+<p>博客的内容使用 <em>markdown</em> 标记，具体的语法参见 <a href="http://wowubuntu.com/markdown/" target="_blank" rel="external">Markdown 语法说明</a>。</p>
+<p>还可以使用 <em>Liquid</em> 模板引擎的语法，具体参见 <a href="https://github.com/Shopify/liquid/wiki/Liquid-for-Designers" target="_blank" rel="external">Liquid for Designers</a>。</p>
+<p>使用以下语句可以在本地预览</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rake preview</span><br></pre></td></tr></table></figure>
+<p>这样会生成并自动观察变化重生成，打开 <code>http://localhost:4000/</code> 中可以看到结果。</p>
+<p>或者可以在 <code>generate</code> 之后使用</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jekyll serve</span><br></pre></td></tr></table></figure>
+<h3 id="文章中代码的高亮"><font colot="330000">文章中代码的高亮</font></h3><hr>
+<p>最直接简单的办法</p>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="escape">``</span><span class="escape">` </span>language</span><br><span class="line">your code</span><br></pre></td></tr></table></figure>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">使用 <span class="emphasis">*Pygments*</span> 来实现高亮，可用的语言参考 [<span class="link_label">Available lexers</span>](<span class="link_url">http://pygments.org/docs/lexers/</span>)。</span><br><span class="line"></span><br><span class="line">完整参数参考 [<span class="link_label">Sharing Code Snippets</span>](<span class="link_url">http://octopress.org/docs/blogging/code/</span>)。</span><br><span class="line"></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="title">br</span> /&gt;</span></span><span class="xml"><span class="tag">&lt;<span class="title">br</span> /&gt;</span></span><span class="xml"><span class="tag">&lt;<span class="title">br</span> /&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="header">### &lt;font color="330000"&gt;过程中的一些问题&lt;/font&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="horizontal_rule">---</span></span><br><span class="line"><span class="code">`push`</span> 或者 <span class="code">`rake deploy`</span> 的过程中会遇到injected的问题，原因是文件重复，不能直接覆盖，使用以下语句解决</span><br><span class="line"></span><br><span class="line"><span class="code">```</span> bash</span><br><span class="line">cd _deploy</span><br><span class="line">git pull</span><br><span class="line">cd ..</span><br><span class="line">rake deploy</span><br><span class="line"><span class="header"># 以上是使用rake时解决办法</span></span><br><span class="line"></span><br><span class="line">git push -f</span><br><span class="line"><span class="header">#强制覆盖</span></span><br></pre></td></tr></table></figure>
+<p>git 的两条设置</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git config --global push.default simple</span><br><span class="line"><span class="comment"># 设置push的时候只push当前分支</span></span><br><span class="line"></span><br><span class="line">git config --global push.default matching</span><br><span class="line"><span class="comment"># push所有变动</span></span><br></pre></td></tr></table></figure>
+<p><br><br><br><br><br><br><br></p>
+<h4 id="参考资料">参考资料</h4><hr>
+<ol>
+<li><a href="http://octopress.org/" target="_blank" rel="external">Octopress 官网</a></li>
+</ol>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>学习研究的过程需要不断地总结，没有总结的学习会很快丢失那些记忆，建立一个博客是个很好的方法。</p>
+<p>在 <em><a href="http://github.com/">Github</a></em> 上建立博客的好处是，不需要去申请域名去租用一个空间，而且建立的过程可以学到很多东西。</p>
+<p>接下来总结一下使用 <em>GitHub Pages</em> 提供的托管服务的静态博客的建立流程以及一些问题。</p>
+<p>以下操作环境都是在Mac中，不在Mac下可能会有不少差别，需要手动安装Git、ruby等等。</p>]]>
+    
+    </summary>
+    
+      <category term="Blog Relations" scheme="http://veracruz.github.io/categories/Blog-Relations/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[U8800pro MIUIv5 深度OS 及 百度云rom 简单评测]]></title>
+    <link href="http://veracruz.github.io/2013/08/13/u8800pro-rom/"/>
+    <id>http://veracruz.github.io/2013/08/13/u8800pro-rom/</id>
+    <published>2013-08-13T04:04:00.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p><em><font color="gray">这是一篇从旧博客迁移来的文章</font></em></p>
+<p>目前这三款系统都有U8800pro的版本，深度os是官方支持，其他的是第三方维护的<br>本次重点是MIUIv5</p>
+<p><b>刷机需谨慎 资料常备份</b></p>
+<a id="more"></a>
+<h2 id="MIUIv5">MIUIv5 <br></h2><p>【版本】3.5.24 (ATX Team) <br><br>【刷机】注意没刷过4.0的机子，也就是底包是2.3的要去刷官方的B928，这里是个麻烦的地方，要先刷回原始的2.3就是B572，然后在按照官方的三部，更新至B928，之后粉屏会被锁，在刷入解锁update.app，替换recovery至6.0.1.2，之后再刷入MIUI的刷机包。另外这个系统的通话有些问题，声音小有电流声有回声，这个要再替换底包，B927的amss.mbn，不过只能解决声音小的问题，如果很在意这个事儿的就不要刷这个系统了</p>
+<p><a href="http://bbs.anzhi.com/thread-6946594-1-1.html" target="_blank" rel="external">H大 MIUIv5 for U8800pro</a></p>
+<p><a href="http://android.tgbus.com/Android/yizhi/201211/455988.shtml" target="_blank" rel="external">粉屏解锁</a></p>
+<p><a href="http://consumer.huawei.com/cn/support/downloads/detail/index.htm?id=15223" target="_blank" rel="external">官方B928</a></p>
+<p><a href="http://www.fengbao.com/huawei_rom/huawei_U8800pro_rom/2012/0322/143481.html" target="_blank" rel="external">B572 卡刷包</a></p>
+<p>ps:上面这个连接的下载貌似有问题，如果有需要可以直接跟我要</p>
+<p><a href="http://dl.dbank.com/c02o28qw0x#" target="_blank" rel="external">B927底包</a></p>
+<p>【评论】第三方相机不能用，内存占用还是挺多的，卡顿还是挺多的，但是触感流畅，用过就明白了，比较稳定，可长期使用<br>PS1：想常驻内存的方法是长按home键，把图标下拉就是加锁，这样没那么容易被kill掉<br>PS2：root权限貌似有点问题，用 360一键root 再root的一次</p>
+<p>【补充】 发现一个问题，联通3gnet接入点不能上网，3gwap虽然能上但是还有有些应用会出问题，下面的深度os也有很多问题，目前官方只有4.0的B928，所以这些4.1的系统都不稳定，在出来更新的固件之前，建议还是用回2.3</p>
+<h2 id="深度OS_for_U8800pro">深度OS for U8800pro</h2><p>【版本】130719 <a href="http://www.shenduos.com/" target="_blank" rel="external">深度OS</a> <br><br>【刷机】如果刷机不成功，参照MIUIv5的刷机 <br><br>【评论】有个大bug，会不断提示 sd卡已移除 或者 正在准备 或者 受损，很多人有这个问题，没有找到解决办法，有解决办法的请联系我，这个系统用起来非常流畅，这个解决不了所以只好放弃</p>
+<h2 id="百度云rom">百度云rom</h2><p>【版本】公测版28 <a href="http://bbs.rom.baidu.com/download.php?phoneid=17" target="_blank" rel="external">百度云rom</a> <br><br>【刷机】如果刷机不成功，参照MIUIv5的刷机 <br><br>【评论】不流畅，各方面都不如上两款，不建议刷</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><em><font color = "gray">这是一篇从旧博客迁移来的文章</font></em></p>
+<p>目前这三款系统都有U8800pro的版本，深度os是官方支持，其他的是第三方维护的<br>本次重点是MIUIv5</p>
+<p><b>刷机需谨慎 资料常备份</b></p>]]>
+    
+    </summary>
+    
+      <category term="Ancient Blog" scheme="http://veracruz.github.io/categories/Ancient-Blog/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Ubuntu 13.04 的几个常用设置(grub背景、自动挂载、网络连接设置)]]></title>
+    <link href="http://veracruz.github.io/2013/05/31/ubuntu-13-dot-04-some-option/"/>
+    <id>http://veracruz.github.io/2013/05/31/ubuntu-13-dot-04-some-option/</id>
+    <published>2013-05-30T16:08:00.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p><em><font color="gray">这是一篇从旧博客迁移来的文章</font></em><br><a id="more"></a><br><br></p>
+<h2 id="###grub的背景设置">###grub的背景设置</h2><p>root权限下修改<code>/boot/grub.d/05_debian_theme</code><br><br>在ubuntu 13.04下的这个文件中有一行是<br><code>for background in .jpg ...    ... do</code> <br><br>中间还有很多格式我省略掉了 这行可以用这种格式添加你的图片目录<code>{/home/xxx/}</code><br><br>之后<code>sudo update-grub</code>就ok</p>
+<p>注：前面都是废话:p，它上面有一句注释，直接把图片放到<code>/boot/grub/</code>下然后<code>sudo update-grub</code>就ok了<br><br><br></p>
+<h2 id="###硬盘分区自动挂载">###硬盘分区自动挂载</h2><p>去修改一个文件就ok <br><br><code>/etc/fstab</code> <br><br>这个文件的格式如下：</p>
+<table><br>    <th>设备</th><br>    <th>挂载位置</th><br>    <th>分区格式</th><br>    <th>挂载选项</th><br>    <th>dump(备份)</th><br>    <th>fsck(磁盘检查)</th><br>    <tr><br>        <td>/dev/sda1</td><br>        <td>/media/c</td><br>        <td>ntds</td><br>        <td>defaults</td><br>        <td>0</td><br>        <td>0</td><br>    </tr><br></table>
+
+<p>上面这个例子就是自动挂载的例子，在分区管理器(ubuntu自带)中可以查看你的磁盘对应的标签<code>sda1</code>还是<code>sda2</code>还是其他的 <br><br>挂载位置可以自选，一般在<code>/media/</code>下 <br><br>挂载选项有7个，一般用不到，<code>defaults</code>就ok，剩下两项一般0就可以</p>
+<p>另外：如果因为修改了fstab而导致不能开机的话，要用 <em>ubuntu liveCD</em> 进去之后修改原来系统的<code>fstab</code>，提前做好准备<br><br><br></p>
+<h2 id="###网络连接的一个问题">###网络连接的一个问题</h2><p>关于手动设置了ip等之后重启系统会自动新建一个连接的问题，自己新建一个连接，手动设置好ip，在限制到接口那个选项要选任意，默认是<code>eth0</code></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><em><font color = "gray">这是一篇从旧博客迁移来的文章</font></em><br>]]>
+    
+    </summary>
+    
+      <category term="Ancient Blog" scheme="http://veracruz.github.io/categories/Ancient-Blog/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Ubuntu 下通过校园网认证的办法]]></title>
+    <link href="http://veracruz.github.io/2013/05/26/ubuntu-collage-network-authenticate/"/>
+    <id>http://veracruz.github.io/2013/05/26/ubuntu-collage-network-authenticate/</id>
+    <published>2013-05-25T20:13:00.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p><em><font color="gray">这是一篇从旧博客迁移来的文章</font></em></p>
+<a id="more"></a>
+<p><br></p>
+<p>###概述</p>
+<hr>
+<p>本身有很多种通过认证的办法：</p>
+<ol>
+<li>学校有提供 linux 版本的认证程序</li>
+<li>有相兼容的认证程序, 像是 <em>mentohust</em>, <em>drcom</em> 等等</li>
+<li>可以用 <em>wine</em> 运行的认证程序</li>
+<li>通过虚拟机</li>
+</ol>
+<p>对于第二种办法，因地而异，百度一些认证拨号程序试一试，最常见的就是 <em>mentohust</em> 、<em>drcom</em></p>
+<p>估计可以用 <em>wine</em> 运行的认证比较少，毕竟需要底层硬件操作</p>
+<p>本次操作的环境是 <em>ubuntu 13.04</em></p>
+<p><br><br></p>
+<p>###解决办法</p>
+<hr>
+<p>这里大致的说一下第四种办法：</p>
+<p>####一、首先安装虚拟机，<em>virtual box</em> 、<em>vmware</em> 或者其他的都可以 <br><br></p>
+<p>####二、<em>virtual box</em> 的安装直接在软件中心就有，关于 <em>vmware</em> 安装可能会遇到一些问题：</p>
+<ol>
+<li>尽量从官网下载最新版本的 <em>vmware workstation for linux</em> ， 我这里版本是<code>9.0.2</code>，非官方的版本可能会出现一个找不到 <code>kernel-header</code> 的错误</li>
+<li>下载之后的文件是 <code>bundle</code> 格式的，将下载好的文件放到 linux 下的分区，桌面即可，将属性里面的可执行选项打钩，或者命令 <code>sudo chmod +x vmware.bundle</code> ，然后在终端里直接运行</li>
+<li>关于序列号，度娘灰常清楚，不过会出现点输入序列号没有反应的情况，终端下用命令：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/lib/vmware/bin/vmware-vmx --new-sn JV2ZX-<span class="number">8</span>R10P-MZV89-E98NK-<span class="number">9</span>A8LM</span><br></pre></td></tr></table></figure>
+<p>   这个序列号 <code>9.0.2</code> 版本是有效的，无效请百度</p>
+<p>####三、我这里用 <em>vmware</em> ，新建一个虚拟机，安装一个xp，这个步骤和 <em>windows</em> 下的使用方法是一样的，百度有很多的介绍<br><br></p>
+<p>####四、在 xp 里安装认证<br><br></p>
+<p>####五、接下来是重点，用双网卡来完成真机的代理：</p>
+<ol>
+<li>在 xp 里的网络连接里设置好本地连接，根据不同的校园网环境设置 </li>
+<li>在 <em>vmware</em> 的虚拟机设置里，添加一个新的网卡硬件，并且选择 <code>host-only</code></li>
+<li>回到 xp 的网络连接，出现一个新的本地连接，属性里的 IP 设置为自动获取</li>
+<li>在 xp 里下载安装 <em>ccproxy 2010</em> ，直接打开默认设置就ok</li>
+<li>回到真机，现在可以直接通过代理来上网了，代理的 ip 是 本地连接2 的 ip 地址，<em>ccproxy</em> 如果是默认设置的话端口是 808</li>
+</ol>
+<p>####六、一些其他问题：</p>
+<ol>
+<li>关于是否能在虚拟机内认证后直接在真机上网，这个跟认证方式有关，有说可以通过在真机的连接设置里将克隆 MAC 填写与虚拟机内的连接一致即可，不过在我这里的环境下无效，无论 <em>vmware</em> 连接设置为 <code>NAT</code> 还是 <code>Bridge</code>。</li>
+<li><em>ubuntu</em> 下全局代理的问题，我尝试过 <code>export http_proxy=http://address:port</code> 无效，尝试过在 xp 里设置 vpn，从外面连接进去，没有成功，可以连接，不能上网，有时候也会连不上。</li>
+<li>如果没有成功的设置好全局代理的话，终端环境下不能连接 internet，其他的未知</li>
+</ol>
+<p>===<br>至此已经可以连接到外网了，但是第四种办法是最无奈的办法，前两种办法能成功最好</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><em><font color = "gray">这是一篇从旧博客迁移来的文章</font></em></p>]]>
+    
+    </summary>
+    
+      <category term="Ancient Blog" scheme="http://veracruz.github.io/categories/Ancient-Blog/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Nokia 5230]]></title>
+    <link href="http://veracruz.github.io/2013/01/16/nokia-5230/"/>
+    <id>http://veracruz.github.io/2013/01/16/nokia-5230/</id>
+    <published>2013-01-16T14:28:00.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p><em><font color="gray">这是一篇从旧博客迁移来的文章</font></em></p>
+<p><br></p>
+<p>买来的 5230 经常会出现乱扣费和收不到 10086 的信息的状况，推测系统是无良商家给刷的坑爹自制系统，不能忍了准备刷机</p>
+<a id="more"></a>
+<p>一开始 <code>*#0000#</code> 的信息是 <code>rm-588</code>，刷了几次都不成功，一直在找问题，<em>JAF</em> 和 <em>凤凰刷机</em> 都试过了，也换了好多系统，都无效</p>
+<p>后来才知道，那无良商家刷的系统是 <code>rm-588</code> 实际应该是<code>rm-593</code>，这让别人买回来的港货就成这样了</p>
+<p>顺便说一下，要刷机应做的准备，很重要，不然会手忙脚乱刷成砖</p>
+<ol>
+<li>拨号 <code>*#0000#</code> 看清楚型号、系统版本、rm号</li>
+<li>工具 <em>JAF</em> (刷机)、<em>navifirm</em> (系统下载，当然也可以直接去搜索对应的自制系统)</li>
+</ol>
+<p>具体的刷机过程, 可百度、google , 很多教程很详细</p>
+<p>如果说没记到版本就刷了机变砖了的话，那就只好找对应rm的系统最高版本了，或者不嫌麻烦的话一个一个试也可以，至于没记到rm号，也是只能一个一个试了。</p>
+<p>同样是 <code>rm-588</code> 刷了机变砖的话，可以尝试刷 <code>rm-588</code> 的最高版本或者去下载 <code>rm-593</code> 的系统试一试</p>
+<p>另外官方的 <code>rm-593</code> 系统貌似没有中文的，可以百度到一个自制的 <code>rm-593</code> 中文系统</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><em><font color = "gray">这是一篇从旧博客迁移来的文章</font></em></p>
+<p><br /></p>
+<p>买来的 5230 经常会出现乱扣费和收不到 10086 的信息的状况，推测系统是无良商家给刷的坑爹自制系统，不能忍了准备刷机</p>]]>
+    
+    </summary>
+    
+      <category term="Ancient Blog" scheme="http://veracruz.github.io/categories/Ancient-Blog/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Kubuntu终端root用户下出现cannot connect to X server 和 unable to open DISPLAY 的解决办法]]></title>
+    <link href="http://veracruz.github.io/2012/07/19/kubuntu-problem/"/>
+    <id>http://veracruz.github.io/2012/07/19/kubuntu-problem/</id>
+    <published>2012-07-19T07:11:00.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p><em><font color="gray">这是一篇从旧博客迁移来的文章</font></em></p>
+<p><br></p>
+<p>在网上查找关于解决这个问题的资料很久，上次在kubuntu 11.10中只需要在添加access的名称即可，但是这次在12.04中却不能解决问题。</p>
+<a id="more"></a>
+<img src="/images/post_image/old_blog/kubuntu.png">
+<p>目前我和试过的三种可行办法如下：</p>
+<p>1.首先假设用户名是 <code>username</code>, 在获得 root 用户权限之前先输入以下命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> DISPLAY=:<span class="number">0.0</span></span><br><span class="line">xhost +username</span><br><span class="line">xhost +root</span><br></pre></td></tr></table></figure>
+<p>这种办法在 <code>11.10</code> 下顺利解决问题</p>
+<p>2.网上看到有不少地方在转载同一个解决办法, 先安装 <em>vncserver</em> 用 <code>apt-get</code> 安装即可。然后输入命令 <code>vncserver</code> 然后会有提示, 其中会有例如 <code>localhost:1</code> 的字样, 其中 <code>localhost</code>  是你在安装 <em>kubuntu</em> 时设定的计算机的名字, 之后输入命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> DISPLAY=localhost:<span class="number">1</span></span><br><span class="line">xhost +</span><br></pre></td></tr></table></figure>
+<p>就会有提示关闭了验证控制，任何客户都可以访问 <br><br>但是在我试图启动 <em>kate</em> 时，出现一系列错误，不知道在其他机子上是否有效。</p>
+<p>3.下面这种办法在我的 <code>12.04</code> 上解决了问题，不过应该算是一种替代解决办法，并没有解决 <em>cannot connect to X server</em> 和 <em>unable to open display</em> 的问题。</p>
+<p>首先 <code>sudo -i</code> 获得root权限, 然后利用 <code>sed</code> 修改 <code>/etc/kde4/kdm/kdmrc</code> 文件，目的是可是以root身份登录桌面, 命令如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed <span class="operator">-e</span> <span class="string">'s/AllowRootLogin=false/AllowRootLogin=true/'</span> -i /etc/kde4/kdm/kdmrc</span><br></pre></td></tr></table></figure>
+<p>然后设置 root 密码</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo passwd root</span><br></pre></td></tr></table></figure>
+<p>之后注销用 root 登录即可，这样以最高权限使用系统。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><em><font color = "gray">这是一篇从旧博客迁移来的文章</font></em></p>
+<p><br /></p>
+<p>在网上查找关于解决这个问题的资料很久，上次在kubuntu 11.10中只需要在添加access的名称即可，但是这次在12.04中却不能解决问题。</p>]]>
+    
+    </summary>
+    
+      <category term="Ancient Blog" scheme="http://veracruz.github.io/categories/Ancient-Blog/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[U8800pro MIUI]]></title>
+    <link href="http://veracruz.github.io/2012/05/10/u8800pro-miui/"/>
+    <id>http://veracruz.github.io/2012/05/10/u8800pro-miui/</id>
+    <published>2012-05-10T13:47:00.000Z</published>
+    <updated>2015-11-19T01:28:59.000Z</updated>
+    <content type="html"><![CDATA[<p><em><font color="gray">这是一篇从旧博客迁移来的文章</font></em></p>
+<a id="more"></a>
+<p><br></p>
+<p>【手机信息】<br><br>品牌：华为<br><br>型号：U8800+/U8800pro<br><br>原始系统：官方Android 2.3.5<br><br>主频：1 GHz<br><br>运行内存：384 MB<br><br>内部存储：0.98 GB<br><br>内置SD卡：1.56 GB<br></p>
+<p>【地址神马的】<br>这几天刷了几个U8800pro上的MIUI系统，主要是M大的和R大的系统，下面给出网址</p>
+<p><a href="http://bbs.anzhi.com/thread-5130931-1-1.html" target="_blank" rel="external">MIUIv4  M大5月5日的系统</a><br><br><a href="http://bbs.anzhi.com/forum.php?mod=viewthread&amp;tid=5108757" target="_blank" rel="external">MIUIv4  M大4月27日的系统</a><br><br><a href="http://bbs.mumayi.com/thread-479045-1-1.html" target="_blank" rel="external">MIUI 2.3.7 R大的</a><br><br><a href="http://bbs.mumayi.com/thread-453560-1-1.html" target="_blank" rel="external">R大的另一个2.3.7r</a><br><br><a href="http://bbs.anzhi.com/forum.php?mod=viewthread&amp;tid=5008328&amp;extra=page%3D1%26filter%3Dtypeid%26typeid%3D4886%26typeid%3D4886" target="_blank" rel="external">G大MIUIv4</a><br><br><a href="http://bbs.anzhi.com/forum.php?mod=viewthread&amp;tid=5059431&amp;extra=page%3D1%26filter%3Dtypeid%26typeid%3D4886%26typeid%3D4886" target="_blank" rel="external">小樱 ICS4.0</a></p>
+<p>都是论坛里的，要下载你懂得，支持一下作者</p>
+<p>另外刷机用的recovery用这个</p>
+<p><a href="http://www.angeeks.com/thread-1754552-1-1.html" target="_blank" rel="external">http://www.angeeks.com/thread-1754552-1-1.html</a></p>
+<p>其他的会失败，尤其是recovery-v6…我试过的系统全部失败…</p>
+<p>推荐三个系统R大 2.3.7r，G大MIUIv4，小樱ICS4.0 <br><br> 以下情况仅供参考，大致描述流畅度、系统资源、音效等方面</p>
+<p>【概述】<br><br>M大的系统是v4，R大的貌似是2.3<br><br>两个版本的都差不多，但是具体系统功能有些差别，但是只是日常使用可能都用不着<br><br>其他的还有，M大的没有开关屏电视机效果，R大的开关屏都有，4.0的菜单风格可能更吸引人，各有各的好吧<br><br>另外，开关屏效果去改framework-res貌似也能搞定<br><br>之所以放上之前版本M大系统，是因为5月那个刷上去以后相机不能用了</p>
+<p>【吐自己的槽】<br><br>流畅度方面，这几个系统都比原厂出来的系统流畅许多，软解能力有提升，触摸反应快很多，让我瞬间觉得我这国产中档手机高档起来了</p>
+<p>以下挑毛病(作为一个菜不太好意思，不过不好意思也得挑)<br><br>不过都说MIUI的触摸效果是相当带感的了<br><br>下面主要介绍M大4.27的系统，以这个为对比介绍其他的系统</p>
+<hr>
+<p>###M大4.27的系统</p>
+<p>【截图神马的】<br><br>先show一下图</p>
+<img src="/images/post_image/old_blog/u8800pro1.png">
+<img src="/images/post_image/old_blog/u8800pro2.png">
+<img src="/images/post_image/old_blog/u8800pro3.png">
+<p>【优点(华丽)】<br><br>华丽的4.0和MIUI界面<br><br>华丽的应用<br><br>流畅的特效<br><br>相对于官方性能大幅提升<br><br>还有N多优点，各位看官用了便知<br></p>
+<p>【那个内存】<br><br>内存神马的开几个程序，一会儿就会用的差不多，系统自身对内存的管理不太给力啊</p>
+<p>【内置SD卡】<br><br>这几个系统都有个我比较关注的重要问题，内置SD卡的问题<br>R大的和最后一个系统在X5setting里就是华为图标的那个里可以改内外部存储，但是不能同时使用，只能把/sdcard挂载到一个存储器上，不过用RE管理器和ES文件管理器都可以访问，而M大的则可以挂载两个存储器，但是刚刷完了其他应用程序还是不能访问，有个笨解决办法，装上华为音乐扫描一遍，然后不管是音乐还是图片都可以被应用程序扫描到了，至于是为啥，我这个菜很是费解…(表面上是挂载数量的问题吧，官方的就可以挂两个)</p>
+<p>【四个触摸键】<br><br>自己调节亮度的时候不会亮…改自动就会亮了，不过觉得比原始系统的好，原来大概2、3秒就会灭，灭的太快了…<br>还有个缺点就是长按菜单，不能呼出输入法…</p>
+<p>【关于放大镜】<br><br>就是最后的搜索键，改成了米键，短按可以改，长按貌似不能诶<br><br>没有本地搜索了…那个搜索不能用…<br><br>另外点亮屏幕的时候有延迟了<br></p>
+<p>【音效和那个DSP管理器】<br><br>最大的问题是，在播放音乐以后再插入耳机不会改到耳机播放，依然外放…这个有点纠结啊<br><br>然后在你拔掉耳机之后，外放就不能用了(这状况…)，再插入耳机DSP的低音增强也没效果了<br><br>音效是很好的，但是那个DSP超级容易便当的，改哪个选项都有可能便当，现在一插耳机就便当，但是那个低音增强效果是不错<br><br>你不能把它卸掉，音乐神马的都会便当的…只改低音增强还可以，其他的不能改…<br><br>另外，铃声音量会比较小<br></p>
+<p>【通讯录啊】<br><br>有时候也会便当…</p>
+<p>【发热量】<br><br>略大略大，不玩游戏，qq，飞信，和一些一般操作，都会使温度上升到38度，当然也就费电了</p>
+<p>【自己安装的应用】<br><br>如图</p>
+<img src="/images/post_image/old_blog/u8800pro4.png">
+<p>之前用悬浮窗，可是广告实在太多了，悬浮窗相当专业，估计作者付出的很多吧。<br><br>现在换网速监控1.2，暂时没有广告，不过有个问题，貌似网速监控一段时间后回导致不能上网…擦…<br><br>另外，这个系统的浏览器不是很好使，最后那个系统的浏览器会比较好用<br></p>
+<p>【总结】<br><br>其实不太好使【偷偷的说…</p>
+<hr>
+<p>###R大系统 2.4.13r<br>(关于三类系统<a href="http://bbs.mumayi.com/thread-574877-1-1.html" target="_blank" rel="external">http://bbs.mumayi.com/thread-574877-1-1.html</a>)</p>
+<p>【优点(性能)】<br><br>这个主要是在性能方面，以下引用原话<br><br>“拥有MIUI所有的功能和特有软件，界面无显示问题，3D性能强，并与主题机制可兼容”<br></p>
+<p>【华丽】<br><br>关于华丽度，两个差不多，但是4.0的感觉可能更清新，切换好看一些</p>
+<p>【DSP】<br><br>木有上述DSP便当问题</p>
+<p>【GPS】<br><br>用google地图的时候不能用啊，改了gps.conf也不能用，supl换了n个还是不能用<br><br>Go天气报错，微博没有报错<br><br>百度地图可以定位，方向在调校以后也能使用了，平衡仪正常</p>
+<p>【温度】<br><br>也会发热，38度，以下引用原话<br><br>“机油反馈发热比较严重，我自己也感觉到了，不过也是相对而言，大家可以自己感受下。”</p>
+<p>【其他】<br><br>费电，出厂系统一整天聊qq也不会没电，这个一上午就没有了 <br><br>自带音乐播放器有bug<br><br>用一段时间会出现不能正常上移动网的情况，联通的就没问题<br><br>另外，有自动重启现象</p>
+<p>【总嘞个结】<br><br>其实和下面的差别不大</p>
+<p>R大系统2.3.7r</p>
+<p>【优点(完善)】<br><br>R大推荐，以下原话<br><br>“当然，就我个人推荐的话，我是推荐第一种，也就是我之前的参赛版，毕竟我不玩大型3D游戏。这一版我自己用的时间也是最长的，各方面非常完善。”</p>
+<p>【流畅度】<br><br>比第三类流畅度方面差了一些，当然这个就是性能方面的缺点，R大有解释</p>
+<p>【放图】<br><br><b>默认主题</b></p>
+<img src="/images/post_image/old_blog/u8800pro5.jpg">
+<img src="/images/post_image/old_blog/u8800pro6.png">
+<img src="/images/post_image/old_blog/u8800pro7.png">
+<img src="/images/post_image/old_blog/u8800pro8.png"> 
+<p><b>Black Ice主题</b></p>
+<img src="/images/post_image/old_blog/u8800pro9.png">
+<img src="/images/post_image/old_blog/u8800pro10.png">
+<img src="/images/post_image/old_blog/u8800pro11.png">
+<img src="/images/post_image/old_blog/u8800pro12.png">
+<p>【发热神马的】<br><br>还是会的</p>
+<p>【总结】<br><br>要是不怎么玩大游戏，这算是个最好的选择吧</p>
+<hr>
+<p>###G大的MIUIv4</p>
+<p>【优点(较少bug的MIUIv4)】<br><br>相对于M大的MIUIv4 DSP的bug没有了 其实就是DSP没有了 GPS和指南针也可以正常使用 google地图貌似还是不行<br><br>其他优点不再赘述<br><br>图就不放了，和M大的v4一样<br></p>
+<p>【额】<br><br>DSP没有了让人很纠结，不过音效还是可以的<br><br>Black Town的主题不能用有点遗憾了，内存消耗的也快<br><br>图库自带编辑的人脸两个功能不能用，点了就便当</p>
+<p>【总结】<br><br>喜欢MIUIv4的话，这个相当不错</p>
+<hr>
+<p>###小樱ICS4.0</p>
+<p>【优点(比较完善的4.0)】<br><br>虽然没有DSP但是Play音乐的音效还是可以替代一下，百度地图没有出来方向<br><br>对于ICS4.0的黑蓝系风格，我个人觉得还是相当有感觉<br><br>不过就ICS4.0的主题，MIUI主题也是可以的，用Black Ice或者Concepto ICS 都可以</p>
+<p>【费电】<br><br>感觉挺费电的，看着电量往下滑</p>
+<p>【总结】<br><br>喜欢纯4.0的话，这个电量神马的都无视之</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><em><font color = "gray">这是一篇从旧博客迁移来的文章</font></em></p>]]>
+    
+    </summary>
+    
+      <category term="Ancient Blog" scheme="http://veracruz.github.io/categories/Ancient-Blog/"/>
+    
+  </entry>
+  
+</feed>
